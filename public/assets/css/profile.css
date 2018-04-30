@@ -19,16 +19,26 @@
   float: right;
 }
 
-.postAction {
-  float: right
+.userAction {
+  display: block;
 }
 
-.likesComments {
-  float: left;
-  padding-top: 15px;
-}
 
 .commentField {
   border-top: 1px solid rgba(0, 0, 0, 0.125);
-  height: 50px;
+  clear: both;
+  width: 100%
+}
+
+.com-av {
+  display: inline !important;
+}
+
+.com-in {
+  height: 30px;
+  flex: 2
+}
+
+.hidden {
+display: none !important
 }

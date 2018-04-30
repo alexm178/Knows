@@ -100,3 +100,8 @@ $('.collection').on('click', function(event) {
   })
   event.preventDefault();
 })
+
+$(".comments").on("click", function(event) {
+  $(this).parent().parent().parent().children(".comment-list").toggleClass("hidden")
+  event.preventDefault();
+})

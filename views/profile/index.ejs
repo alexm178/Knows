@@ -417,22 +417,31 @@
                     <%= post.content %>
                   </p>
                 </div>
-                <div class='userAction'>
-                  <div class='likesComments'>
-                    <a href=#><span class="icon icon-heart"></span>Likes</a>
+                <div class='d-flex'>
+                  <div class="mr-auto pt-1">
+                    <a class="likes" href=#><span class="icon icon-heart"></span>Likes</a>
                     <span>&nbsp</span>
-                    <a href=#><span class="icon icon-message"></span>Comments</a>
+                    <a class="comments" href=#><span class="icon icon-message"></span>Comments</a>
                   </div>
-                  <div class='postAction'>
-                    <button class='btn btn-md btn-outline-secondary'><span class='icon icon-heart' style='color: red'></span></button>
-                    <button class='btn btn-md btn-outline-secondary'><span class='icon icon-message' style='color: #3097D1'></span></button>
-                    <button class='btn btn-md btn-outline-secondary'><span class='icon icon-retweet' style='color: green'></span></button>
+                  <div>
+                    <button class='btn btn-sm btn-outline-secondary'><span class='icon icon-heart' style='color: red'></span></button>
+                    <button class='btn btn-sm btn-outline-secondary'><span class='icon icon-message' style='color: #3097D1'></span></button>
+                    <button class='btn btn-sm btn-outline-secondary'><span class='icon icon-retweet' style='color: green'></span></button>
                   </div>
-              </div>
-                <div class="commentField media-footer">
-                  <input type="text">
                 </div>
+                  <ul class="media-list comment-list hidden">
+                  <li class="pt-2" style="display: flex; flex-direction: row; height: 50px !important">
+
+                    <img
+                      class="media-object com-av"
+                      src="<%= user.img %>">
+
+                    <input class="com-in mt-2" type="text" placeholder="Write a comment...">
+
+                  </li>
+                </ul>
               </div>
+
 
             </li>
 
