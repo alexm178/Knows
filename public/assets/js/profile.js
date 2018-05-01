@@ -1,8 +1,9 @@
-var $newPost = $('#newPost');
-var $postInput = $('#postInput');
-var $posts = $('#posts');
+//==========INITIAL FORMATTING================================
+
+//---------VARIABLES-----------------
 var $timestamps = $('.timeStamp');
-var $collection = $('.collection');
+
+//---------FUNCTIONS-----------------
 
 function time_ago(time) {
 
@@ -51,6 +52,16 @@ $timestamps.each((i) => {
   $timestamps[i].innerHTML = time_ago(Number($timestamps[i].innerHTML))
 })
 
+//=================POSTS====================================
+
+//---------VARIABLES--------------------
+var $newPost = $('#newPost');
+var $postInput = $('#postInput');
+var $posts = $('#posts');
+
+
+//--------FUNCTIONS/FORMATTING-------------------
+
 function formatPost(post) {
   var html = '<li class="card media list-group-item p-4 post"><img class="media-object d-flex align-self-start mr-3" src="' + post.author.img + '"><div class="media-body"><div class="media-body-text"><div class="media-heading"><small class="float-right text-muted">' + time_ago(post.date) + '</small><h6><a href="' + post.author.id + '">' + post.author.name + '</a>';
   if (!(post.author.id === post.user.id)) {
@@ -60,6 +71,8 @@ function formatPost(post) {
   return html;
 }
 
+
+//-------------AJAX---------------------
 $newPost.submit(function(event) {
   $.ajax({
     url: "http://localhost:3000" + window.location.pathname + "/newPost",
@@ -76,6 +89,14 @@ $newPost.submit(function(event) {
   event.preventDefault();
 })
 
+
+//==============NAVIGATION====================
+
+//------VARIABLES------------
+var $collection = $('.collection');
+
+
+//------AJAX------------------
 
 $collection.on('click', function(event) {
   var $this = $(this);
@@ -103,6 +124,19 @@ $collection.on('click', function(event) {
   event.preventDefault();
 })
 
+//=============!!!!!! LIKE/COMMENT/SHARE !!!!!!!!!!!=====================
+
+//============COMMENT================================
+
+//-----------FUNCTIONS/FORMATTING-----------
+
+function formatComment(comment) {
+  var html = '<li class="media mb-3"><img class="media-object d-flex align-self-start mr-3" src="' + comment.author.img + '"><div class="media-body"><div class="media-body-text"><div class="media-heading"><small class="float-right text-muted"><span class="timeStamp">' + time_ago(comment.date) + '</span></small><h6><a href=' + comment.author.id + '><strong>' + comment.author.name + ': </strong></a></h6></div>' + comment.content + '</div</div></li>';
+  return html
+}
+
+//-----------AJAX--------------------------
+
 $(".comments").on("click", function(event) {
   var $this  = $(this);
   $this.parent().toggleClass("mb-3");
@@ -110,7 +144,7 @@ $(".comments").on("click", function(event) {
   if (!($this.hasClass("populated"))){
     var postId = $this.parent().parent().parent().parent().attr("id");
     $.ajax({
-      url: "http://localhost:3000" + window.location.pathname + '/Feed/' + postId,
+      url: "http://localhost:3000" + window.location.pathname + '/Feed/' + postId + '/comments',
       data: {},
       type: 'GET',
       dataType: 'json'
@@ -125,26 +159,74 @@ $(".comments").on("click", function(event) {
   event.preventDefault();
 })
 
-function formatComment(comment) {
-  var html = '<li class="media mb-3"><img class="media-object d-flex align-self-start mr-3" src="' + comment.author.img + '"><div class="media-body"><div class="media-body-text"><div class="media-heading"><small class="float-right text-muted"><span class="timeStamp">' + time_ago(comment.date) + '</span></small><h6><a href=' + comment.author.id + '><strong>' + comment.author.name + ': </strong></a></h6></div>' + comment.content + '</div</div></li>';
-  return html
+
+
+$(".com-form").on("submit", function(event) {
+  var $this = $($(this).children()[0]);
+  if($this.val() !== '') {
+    var postId = $this.parent().parent().parent().parent().parent().parent().attr("id");
+      $.ajax({
+        url: "http://localhost:3000" + window.location.pathname + '/comment/' + postId,
+        data: {
+          content: $this.val()
+        },
+        type: 'POST',
+        dataType: 'json'
+      })
+      .done((comment) => {
+        $this.parent().parent().parent().before(formatComment(comment))
+        $this.val('')
+      })
+  }
+  event.preventDefault()
+})
+
+//================LIKE==============================
+
+//------------FORMATTIING/FUNCTIONS-----------------
+
+function formatLikeModal(response) {
+  var html = '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Likes</h4><button id="close" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button></div><div class="modal-body p-0"><div class="modal-body-scroller"><ul class="media-list media-list-users list-group">'
+  response.forEach(function(like) {
+    html += '<li class="list-group-item"><div class="media w-100"><img class="media-object d-flex align-self-start mr-3" src="' + like.img + '"><div class="media-body"><button class="btn btn-primary btn-sm float-right"><span class="icon icon-add-user"></span> Follow</button><a href=' + like.id + '><strong>' + like.name  + '</strong></a></div></div></li>'
+  });
+  html += '</ul></div></div></div></div>';
+  return html;
 }
 
-$(".com-in").keydown(function(event) {
+$(".like").on("click", function(event) {
   var $this = $(this);
-  var postId = $this.parent().parent().parent().parent().parent().attr("id");
-  if (event.which == 13) {
-    $.ajax({
-      url: "http://localhost:3000" + window.location.pathname + '/comment/' + postId,
-      data: {
-        content: $this.val()
-      },
-      type: 'POST',
+  var postId = $this.parent().parent().parent().parent().attr('id');
+  $.ajax({
+    url: "http://localhost:3000" + window.location.pathname + '/like/' + postId,
+    data: {},
+    type: 'POST',
+    dataType: 'json'
+  })
+  .done((response) => {
+    $this.addClass('hidden');
+  })
+})
+
+var serverReturnedLikes = false;
+
+$(".likes").on("click", function(event) {
+  if (serverReturnedLikes) {
+    return true
+  } else {
+    $this = $(this);
+    var postId = $this.parent().parent().parent().parent().attr('id');
+    $.ajax ({
+      url: "http://localhost:3000" + window.location.pathname + '/Feed/' + postId + '/likes',
+      data: {},
+      type: 'GET',
       dataType: 'json'
     })
-    .done((comment) => {
-      $this.parent().parent().before(formatComment(comment))
-      $this.val('')
+    .done((response) => {
+      serverReturnedLikes = true;
+      $('#userModal').html(formatLikeModal(response));
+      serverReturnedLikes = false;
     })
+    event.preventDefault();
   }
 })

@@ -148,7 +148,7 @@ app.post('/signup', (req, res) => {
 
 
 //===================================
-app.get('/profile/:id/:collection?/:postId?', (req, res) => {
+app.get('/profile/:id/:collection?/:postId?/:postAction?', (req, res) => {
   switch (req.params.collection) {
     case undefined:
       getProfile(req, res);
@@ -187,9 +187,15 @@ function getProfile(req, res) {
 
 function getFeed(req, res) {
   if (req.params.postId) {
-    Post.findById(req.params.postId).populate("comments").exec(function (err, post) {
-      res.json(post.comments);
-    })
+    if (req.params.postAction === 'comments') {
+      Post.findById(req.params.postId).populate("comments").exec(function (err, post) {
+        res.json(post.comments);
+      })
+    } else if (req.params.postAction === 'likes'){
+      Post.findById(req.params.postId).populate("likes").exec(function (err, post) {
+        res.json(post.likes);
+      })
+    }
   } else {
     User.findById(req.params.id).populate("posts").exec(function(err, profile) {
        if(err) {
@@ -219,10 +225,13 @@ app.post('/profile/:id/:action/:postId?', (req, res) => {
       break;
     case 'editBio':
       editBio(req, res);
-      break
+      break;
     case 'comment':
       newComment(req, res);
-      break
+      break;
+    case 'like':
+      likePost(req, res);
+      break;
   }
 })
 
@@ -293,6 +302,23 @@ function newComment(req, res) {
         post.save();
         res.json(comment);
       })
+    }
+  })
+}
+
+function likePost(req, res) {
+  Post.findById(req.params.postId, (err, post) => {
+    if (err) {
+      console.log(err)
+    } else {
+      var newLike = {
+        id: req.user._id,
+        name: req.user.firstName + ' ' + req.user.lastName,
+        img: req.user.img
+      };
+      post.likes.push(newLike);
+      post.save();
+      res.end('{"success" : "Liked Successfully", "status" : 200}');
     }
   })
 }

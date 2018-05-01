@@ -24,7 +24,16 @@ var postSchema = new mongoose.Schema({
       ref: 'Comment'
     }
   ],
-  likes: Array,
+  likes: [
+    {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
+      name: String,
+      img: String
+    }
+  ],
   date: 'Number'
 
 });
