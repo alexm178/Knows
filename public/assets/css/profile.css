@@ -30,13 +30,8 @@
   width: 100%
 }
 
-.com-av {
-  display: inline !important;
-}
-
 .com-in {
-  height: 30px;
-  flex: 2
+  width: 100%
 }
 
 .hidden {

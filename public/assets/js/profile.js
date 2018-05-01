@@ -2,6 +2,7 @@ var $newPost = $('#newPost');
 var $postInput = $('#postInput');
 var $posts = $('#posts');
 var $timestamps = $('.timeStamp');
+var $collection = $('.collection');
 
 function time_ago(time) {
 
@@ -75,7 +76,8 @@ $newPost.submit(function(event) {
   event.preventDefault();
 })
 
-$('.collection').on('click', function(event) {
+
+$collection.on('click', function(event) {
   var $this = $(this);
   var collection = $this.html();
   $.ajax({
@@ -93,7 +95,7 @@ $('.collection').on('click', function(event) {
         $posts.prepend(formatPost(post));
       })
     }
-    $('.collection').each((i, v) => {
+    $collection.each((i, v) => {
       $(v).parent().removeClass('active');
     })
     $this.parent().addClass('active');
@@ -102,6 +104,47 @@ $('.collection').on('click', function(event) {
 })
 
 $(".comments").on("click", function(event) {
-  $(this).parent().parent().parent().children(".comment-list").toggleClass("hidden")
+  var $this  = $(this);
+  $this.parent().toggleClass("mb-3");
+  $this.parent().parent().parent().children(".comment-list").toggleClass("hidden");
+  if (!($this.hasClass("populated"))){
+    var postId = $this.parent().parent().parent().parent().attr("id");
+    $.ajax({
+      url: "http://localhost:3000" + window.location.pathname + '/Feed/' + postId,
+      data: {},
+      type: 'GET',
+      dataType: 'json'
+    })
+    .done((response) => {
+      response.reverse().forEach((comment) => {
+        $this.parent().parent().parent().children(".comment-list").prepend(formatComment(comment))
+      })
+      $this.addClass("populated");
+    })
+  }
   event.preventDefault();
+})
+
+function formatComment(comment) {
+  var html = '<li class="media mb-3"><img class="media-object d-flex align-self-start mr-3" src="' + comment.author.img + '"><div class="media-body"><div class="media-body-text"><div class="media-heading"><small class="float-right text-muted"><span class="timeStamp">' + time_ago(comment.date) + '</span></small><h6><a href=' + comment.author.id + '><strong>' + comment.author.name + ': </strong></a></h6></div>' + comment.content + '</div</div></li>';
+  return html
+}
+
+$(".com-in").keydown(function(event) {
+  var $this = $(this);
+  var postId = $this.parent().parent().parent().parent().parent().attr("id");
+  if (event.which == 13) {
+    $.ajax({
+      url: "http://localhost:3000" + window.location.pathname + '/comment/' + postId,
+      data: {
+        content: $this.val()
+      },
+      type: 'POST',
+      dataType: 'json'
+    })
+    .done((comment) => {
+      $this.parent().parent().before(formatComment(comment))
+      $this.val('')
+    })
+  }
 })

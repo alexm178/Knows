@@ -11,24 +11,10 @@ var passportLocalMongoose = require('passport-local-mongoose');
 var MongoStore = require('connect-mongo')(session);
 
 
-// var path = require('path');
-// var multer = require('multer');
-// var multerS3 = require('multer-s3');
-//
-// var AWS = require('aws-sdk');
-// AWS.config.loadFromPath('config.json');
-// var s3 = new AWS.S3( { params: {Bucket: 'knows'} } )
-
-
-
-
-
-
-
-
 mongoose.connect("mongodb://localhost/knows");
-var User = require('./models/user')
-var Post = require('./models/post')
+var User = require('./models/user');
+var Post = require('./models/post');
+var Comment = require('./models/comment');
 
 
 
@@ -162,7 +148,7 @@ app.post('/signup', (req, res) => {
 
 
 //===================================
-app.get('/profile/:id/:collection?', (req, res) => {
+app.get('/profile/:id/:collection?/:postId?', (req, res) => {
   switch (req.params.collection) {
     case undefined:
       getProfile(req, res);
@@ -184,7 +170,6 @@ function getProfile(req, res) {
      if(err) {
        console.log(err)
      } else {
-       console.log(profile);
        profile.posts.reverse();
        var editor = (req.user._id.equals(profile.id));
        User.findById(req.user._id, (err, user) => {
@@ -201,13 +186,19 @@ function getProfile(req, res) {
 }
 
 function getFeed(req, res) {
-  User.findById(req.params.id).populate("posts").exec(function(err, profile) {
-     if(err) {
-       console.log(err)
-     } else {
-       res.json({posts: profile.posts})
-     }
-  });
+  if (req.params.postId) {
+    Post.findById(req.params.postId).populate("comments").exec(function (err, post) {
+      res.json(post.comments);
+    })
+  } else {
+    User.findById(req.params.id).populate("posts").exec(function(err, profile) {
+       if(err) {
+         console.log(err)
+       } else {
+         res.json({posts: profile.posts})
+       }
+    });
+  }
 }
 
 function getProjects(req, res) {
@@ -218,7 +209,7 @@ function getPhotos(req, res) {
   res.json({html: '<h1>Photos Here</h1>'})
 }
 
-app.post('/profile/:id/:action', (req, res) => {
+app.post('/profile/:id/:action/:postId?', (req, res) => {
   switch (req.params.action) {
     case 'follow':
       addFollow(req, res);
@@ -228,7 +219,10 @@ app.post('/profile/:id/:action', (req, res) => {
       break;
     case 'editBio':
       editBio(req, res);
-      break;
+      break
+    case 'comment':
+      newComment(req, res);
+      break
   }
 })
 
@@ -280,6 +274,26 @@ function newPost(req, res) {
       }
     })
    }
+  })
+}
+
+function newComment(req, res) {
+  Post.findById(req.params.postId, (err, post) => {
+    if (err) {
+      console.log(err);
+    } else {
+      Comment.create({content: req.body.content}, (err, comment) => {
+        comment.date = Date.now();
+        comment.author.id = req.user._id;
+        comment.author.name = req.user.firstName + ' ' + req.user.lastName;
+        comment.author.img = req.user.img;
+        comment.post = req.params.postId;
+        comment.save();
+        post.comments.push(comment._id);
+        post.save();
+        res.json(comment);
+      })
+    }
   })
 }
 //======================================
