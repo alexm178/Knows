@@ -8530,10 +8530,12 @@ img.zoom-img {
 
 .media-list-stream .media-object {
   width: 42px;
+  height: 42px;
   margin-right: 5px; }
 
 .media-list-stream .media-body .media-list .media-object {
-  width: 40px; }
+  width: 40px;
+  height: 40px}
 
 .media-list-stream .media-list .media-object {
   display: none; }
@@ -8556,7 +8558,8 @@ img.zoom-img {
   .media-list-stream .media-list .media-object {
     display: block; }
   .media-list-stream .media-object {
-    width: 60px; } }
+    width: 60px;
+    height: 60px;} }
 
 .media-list-conversation .media-object {
   width: 42px;

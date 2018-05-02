@@ -391,9 +391,8 @@
         <div class="card-header" style="background-image: url(../assets/img/iceland.jpg);"></div>
         <div class="card-block text-center">
           <a href="../profile/<%= user.id %>">
-            <img
-              class="card-profile-img"
-              src="<%= user.img %>">
+              <div class="card-profile-img" style="background-image: url(<%= user.img %>); height: 100px; width: 100px; background-size: cover; background-position: center; display: inline-block">
+              </div>
           </a>
 
           <h6 class="card-title">

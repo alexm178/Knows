@@ -398,9 +398,10 @@
             <div id='posts'>
             <% profile.posts.forEach((post) => { %>
               <li id="<%= post._id %>" class="card media list-group-item p-4 post">
-              <img
+              <div
                 class="media-object d-flex align-self-start mr-3"
-                src="<%= post.author.img %>">
+                style="background-image: url(<%= post.author.img %>); background-size: cover; background-position: center;">
+              </div>
               <div class="media-body">
                 <div class="media-body-text">
                   <div class="media-heading">
@@ -439,9 +440,9 @@
                   <ul class="media-list comment-list hidden">
                    <li class="media mb-3">
 
-                    <img
-                      class="media-object d-flex align-self-start mr-3"
-                      src="<%= user.img %>">
+                    <div
+                      class="media-object d-flex align-self-start mr-3" style="background-image: url(<%= user.img %>); height: 40px; background-size: cover; background-position: center; display: inline-block">
+                    </div>
                     <div class="media-body">
                       <form class="com-form" method="post">
                         <input class="com-in mt-2" type="text" placeholder="Write a comment...">

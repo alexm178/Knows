@@ -191,7 +191,7 @@ $(document).on("submit", ".com-form", function(event) {
 function formatLikeModal(response) {
   var html = '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Likes</h4><button id="close" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button></div><div class="modal-body p-0"><div class="modal-body-scroller"><ul class="media-list media-list-users list-group">'
   response.forEach(function(like) {
-    html += '<li class="list-group-item"><div class="media w-100"><img class="media-object d-flex align-self-start mr-3" src="' + like.img + '"><div class="media-body"><button class="btn btn-primary btn-sm float-right"><span class="icon icon-add-user"></span> Follow</button><a href=' + like.id + '><strong>' + like.name  + '</strong></a></div></div></li>'
+    html += '<li class="list-group-item"><div class="media w-100"><div class="media-object d-flex align-self-start mr-3" style="background-image: url(' + like.img + '); background-size: cover; background-position: center; height: 42px"></div><div class="media-body"><button class="btn btn-primary btn-sm float-right"><span class="icon icon-add-user"></span> Follow</button><a href=' + like.id + '><strong>' + like.name  + '</strong></a></div></div></li>'
   });
   html += '</ul></div></div></div></div>';
   return html;
