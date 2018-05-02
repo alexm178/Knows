@@ -215,7 +215,7 @@ function getPhotos(req, res) {
   res.json({html: '<h1>Photos Here</h1>'})
 }
 
-app.post('/profile/:id/:action/:postId?', (req, res) => {
+app.post('/profile/:id/:action/:postId?', isLoggedIn, (req, res) => {
   switch (req.params.action) {
     case 'follow':
       addFollow(req, res);

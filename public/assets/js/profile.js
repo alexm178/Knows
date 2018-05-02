@@ -52,6 +52,7 @@ $timestamps.each((i) => {
   $timestamps[i].innerHTML = time_ago(Number($timestamps[i].innerHTML))
 })
 
+
 //=================POSTS====================================
 
 //---------VARIABLES--------------------
@@ -63,11 +64,11 @@ var $posts = $('#posts');
 //--------FUNCTIONS/FORMATTING-------------------
 
 function formatPost(post) {
-  var html = '<li class="card media list-group-item p-4 post"><img class="media-object d-flex align-self-start mr-3" src="' + post.author.img + '"><div class="media-body"><div class="media-body-text"><div class="media-heading"><small class="float-right text-muted">' + time_ago(post.date) + '</small><h6><a href="' + post.author.id + '">' + post.author.name + '</a>';
+  var html = '<li id="' + post._id + '" class="card media list-group-item p-4 post"><img class="media-object d-flex align-self-start mr-3" src="' + post.author.img + '"><div class="media-body"><div class="media-body-text"><div class="media-heading"><small class="float-right text-muted">' + time_ago(post.date) + '</small><h6><a href="' + post.author.id + '">' + post.author.name + '</a>';
   if (!(post.author.id === post.user.id)) {
     html +='<span class="icon icon-triangle-right"></span><a href="' + post.user.id + '">' + post.user.name + '</a>';
   };
-  html += '</h6></div><p>' + post.content + '</p></div></div></li>';
+  html += '</h6></div><p>' + post.content + '</p></div><div class="d-flex postData"><div class="mr-auto pt-1"><a class="likes" href="#userModal" data-toggle="modal"><span class="icon icon-heart"></span><span class="likeCount">0</span> Likes</a><span>&nbsp</span><a class="comments" href=#><span class="icon icon-message"></span><span class="commentCount">0</span> Comments</a></div><div><button class="btn btn-sm btn-outline-secondary like"><span class="icon icon-heart" style="color: red"></span></button><button class="btn btn-sm btn-outline-secondary share"><span class="icon icon-retweet" style="color: green"></span></button></div></div><ul class="media-list comment-list hidden"><li class="media mb-3"><img class="media-object d-flex align-self-start mr-3" src="'+ post.author.img +'"><div class="media-body"><form class="com-form"><input class="com-in mt-2" type="text" placeholder="Write a comment..."></form></div></li></ul></div></li>';
   return html;
 }
 
@@ -137,7 +138,7 @@ function formatComment(comment) {
 
 //-----------AJAX--------------------------
 
-$(".comments").on("click", function(event) {
+$(document).on("click", ".comments", function(event) {
   var $this  = $(this);
   $this.parent().toggleClass("mb-3");
   $this.parent().parent().parent().children(".comment-list").toggleClass("hidden");
@@ -161,7 +162,7 @@ $(".comments").on("click", function(event) {
 
 
 
-$(".com-form").on("submit", function(event) {
+$(document).on("submit", ".com-form", function(event) {
   var $this = $($(this).children()[0]);
   if($this.val() !== '') {
     var postId = $this.parent().parent().parent().parent().parent().parent().attr("id");
@@ -176,6 +177,8 @@ $(".com-form").on("submit", function(event) {
       .done((comment) => {
         $this.parent().parent().parent().before(formatComment(comment))
         $this.val('')
+        var commentCount = $this.parents(".media-body").children(".postData").children(".pt-1").children(".comments").children(".commentCount");
+        commentCount.html(Number(commentCount.html()) + 1)
       })
   }
   event.preventDefault()
@@ -194,9 +197,10 @@ function formatLikeModal(response) {
   return html;
 }
 
-$(".like").on("click", function(event) {
+$(document).on("click", ".like", function(event) {
   var $this = $(this);
-  var postId = $this.parent().parent().parent().parent().attr('id');
+  var $post = $this.parent().parent().parent().parent();
+  var postId = $post.attr('id');
   $.ajax({
     url: "http://localhost:3000" + window.location.pathname + '/like/' + postId,
     data: {},
@@ -205,12 +209,14 @@ $(".like").on("click", function(event) {
   })
   .done((response) => {
     $this.addClass('hidden');
+    var likeCount = $this.parent().parent().children(".pt-1").children(".likes").children('.likeCount');
+    likeCount.html(Number(likeCount.html()) + 1)
   })
 })
 
 var serverReturnedLikes = false;
 
-$(".likes").on("click", function(event) {
+$(document).on("click", ".likes", function(event) {
   if (serverReturnedLikes) {
     return true
   } else {

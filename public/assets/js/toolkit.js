@@ -1786,9 +1786,9 @@ var Modal = function ($) {
         event.preventDefault();
       }
 
-      if (this._isTransitioning) {
-        throw new Error('Modal is transitioning');
-      }
+      // if (this._isTransitioning) {
+      //   throw new Error('Modal is transitioning');
+      // }
 
       var transition = Util.supportsTransitionEnd() && $(this._element).hasClass(ClassName.FADE);
       if (transition) {
