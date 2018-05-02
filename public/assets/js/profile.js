@@ -190,8 +190,8 @@ $(document).on("submit", ".com-form", function(event) {
 
 //------------FORMATTIING/FUNCTIONS-----------------
 
-function formatUserModal(response) {
-  var html = '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">' + $this.text() + '</h4><button id="close" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button></div><div class="modal-body p-0"><div class="modal-body-scroller"><ul class="media-list media-list-users list-group">'
+function formatUserModal(response, title) {
+  var html = '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">' + title + '</h4><button id="close" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button></div><div class="modal-body p-0"><div class="modal-body-scroller"><ul class="media-list media-list-users list-group">'
   response.forEach(function(like) {
     html += '<li class="list-group-item"><div class="media w-100"><div class="media-object d-flex align-self-start mr-3" style="background-image: url(' + like.img + '); background-size: cover; background-position: center; height: 42px;"></div><div class="media-body"><button class="btn btn-primary btn-sm float-right"><span class="icon icon-add-user"></span> Follow</button><a href="../profile/' + like.id + '"><strong>' + like.name  + '</strong></a></div></div></li>'
   });
@@ -222,7 +222,7 @@ $(document).on("click", ".likes", function(event) {
   if (serverReturnedLikes) {
     return true
   } else {
-    $this = $(this);
+    var $this = $(this);
     var postId = $this.parent().parent().parent().parent().attr('id');
     $.ajax ({
       url: "http://localhost:3000/post/likes/" + postId,
@@ -232,7 +232,8 @@ $(document).on("click", ".likes", function(event) {
     })
     .done((response) => {
       serverReturnedLikes = true;
-      $('#userModal').html(formatUserModal(response));
+      var title = 'Likes';
+      $('#userModal').html(formatUserModal(response, title));
       serverReturnedLikes = false;
     })
     event.preventDefault();
@@ -240,21 +241,55 @@ $(document).on("click", ".likes", function(event) {
 })
 
 //============FOLLOWS/FOLLOWING==============
+
+var serverReturnedFollowing = false;
+
 $('#following').on("click", function(event) {
-  var url = "http://localhost:3000/user/follows";
-  if (profileId) {
-    url += "/" + profileId;
+  if (serverReturnedFollowing) {
+    return true;
+  } else {
+      var url = "http://localhost:3000/user/following";
+      if (profileId) {
+        url += "/" + profileId;
+      }
+      $.ajax({
+        url: url,
+        data: {},
+        type: 'GET',
+        dataType: 'json'
+      })
+      .done((response) => {
+        serverReturnedLikes = true;
+        var title = "Following"
+        $('#userModal').html(formatUserModal(response, title));
+        serverReturnedLikes = false;
+      })
+    event.preventDefault();
   }
-  $.ajax({
-    url: url,
-    data: {},
-    type: 'GET',
-    dataType: 'json'
-  })
-  .done((followingArray) => {
-    console.log(followingArray)
-  })
-  event.preventDefault();
+})
+
+$('#followers').on("click", function(event) {
+  if (serverReturnedFollowing) {
+    return true;
+  } else {
+      var url = "http://localhost:3000/user/followers";
+      if (profileId) {
+        url += "/" + profileId;
+      }
+      $.ajax({
+        url: url,
+        data: {},
+        type: 'GET',
+        dataType: 'json'
+      })
+      .done((response) => {
+        serverReturnedLikes = true;
+        var title = "Followers"
+        $('#userModal').html(formatUserModal(response, title));
+        serverReturnedLikes = false;
+      })
+    event.preventDefault();
+  }
 })
 
 $('#newFollow').on('click', function(event) {

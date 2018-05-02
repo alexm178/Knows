@@ -76,7 +76,6 @@ app.get('/', isLoggedIn, (req, res) => {
 
 app.get('/dash/:id', isLoggedIn, (req, res) => {
     User.findById(req.params.id).populate('posts').then((user) => {
-      if (req.user.following.length > 0) {
         var posts = user.posts;
         user.following.forEach((following) => {
           User.findById(following.id).populate('posts').then((follow) => {
@@ -84,14 +83,12 @@ app.get('/dash/:id', isLoggedIn, (req, res) => {
               posts.push(post)
             })
           }).then(() => {
-            res.render('dash', {user: user, posts: posts.sort((a, b) => {
+            posts.sort((a, b) => {
               return b.date - a.date
-            })})
+            })
+            res.render('dash', {user: user, posts: posts})
           })
         })
-      } else {
-        res.render('dash', {user: user, posts: user.posts})
-      }
     })
 })
 
@@ -347,6 +344,20 @@ function getFollowing(req, res) {
       console.log(err);
     } else {
       res.json(user.following)
+    }
+  })
+}
+
+function getFollowers(req, res) {
+  var id = req.user._id;
+  if (req.params.id) {
+    id = req.params.id;
+  }
+  User.findById(id, function(err, user) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(user.followers)
     }
   })
 }
