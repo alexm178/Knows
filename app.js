@@ -76,21 +76,25 @@ app.get('/', isLoggedIn, (req, res) => {
 
 app.get('/dash/:id', isLoggedIn, (req, res) => {
     User.findById(req.params.id).populate('posts').then((user) => {
-        var posts = user.posts;
+      var posts = user.posts;
+      if (req.user.following.length > 0) {
         user.following.forEach((following) => {
           User.findById(following.id).populate('posts').then((follow) => {
             follow.posts.forEach((post) => {
               posts.push(post)
             })
           }).then(() => {
-            posts.sort((a, b) => {
+            res.render('dash', {user: user, posts: posts.sort((a, b) => {
               return b.date - a.date
-            })
-            res.render('dash', {user: user, posts: posts})
+            })})
           })
         })
+      } else {
+        res.render('dash', {user: user, posts: posts})
+      }
     })
 })
+
 
 app.post('/dash/:id/newPost', isLoggedIn, (req, res) => {
   User.findById(req.params.id, (err, user) => {
