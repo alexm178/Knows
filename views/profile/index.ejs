@@ -37,6 +37,7 @@
 
 
 <body class="with-top-navbar">
+<div id="<%= profile._id %>" class='profileId' style='display: none'></div>
 
 
 
@@ -343,6 +344,9 @@
           Say something about yourself
         <% } %>
       </p>
+      <% if (!isFollowing && !(user._id.equals(profile._id))) { %>
+        <button id='newFollow' class="btn btn-outline-primary btn-sm"><span class="icon icon-add-user"></span> Follow</button>
+      <% } %>
     </div>
   </div>
 
@@ -407,10 +411,10 @@
                   <div class="media-heading">
                     <small class="float-right text-muted"><span class="timeStamp"><%= post.date %></span></small>
                     <h6>
-                      <a href='./<%= post.author.id %>'><%= post.author.name %></a>
+                      <a href='../profile/<%= post.author.id %>'><%= post.author.name %></a>
                       <% if (!post.author.id.equals(post.user.id)) { %>
                         <span class="icon icon-triangle-right"></span>
-                        <a href='./<%= post.user.id %>'><%= post.user.name %></a>
+                        <a href='../profile/<%= post.user.id %>'><%= post.user.name %></a>
                       <% } %>
                     </h6>
                   </div>
@@ -432,9 +436,9 @@
                       <% } %>
                     <% }) %>
                     <% if (!liked) { %>
-                      <button class='btn btn-sm btn-outline-secondary like'><span class='icon icon-heart' style='color: red'></span></button>
+                      <button class='btn btn-sm btn-outline-secondary like'><span class='icon icon-heart' style='color: #3097D1'></span></button>
                     <% } %>
-                    <button class='btn btn-sm btn-outline-secondary share'><span class='icon icon-retweet' style='color: green'></span></button>
+                    <button class='btn btn-sm btn-outline-secondary share'><span class='icon icon-retweet' style='color: #3097D1'></span></button>
                   </div>
                 </div>
                   <ul class="media-list comment-list hidden">

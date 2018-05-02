@@ -2,6 +2,8 @@
 
 //---------VARIABLES-----------------
 var $timestamps = $('.timeStamp');
+var profileId = $('.profileId').attr('id');
+
 
 //---------FUNCTIONS-----------------
 
@@ -64,11 +66,11 @@ var $posts = $('#posts');
 //--------FUNCTIONS/FORMATTING-------------------
 
 function formatPost(post) {
-  var html = '<li id="' + post._id + '" class="card media list-group-item p-4 post"><img class="media-object d-flex align-self-start mr-3" src="' + post.author.img + '"><div class="media-body"><div class="media-body-text"><div class="media-heading"><small class="float-right text-muted">' + time_ago(post.date) + '</small><h6><a href="' + post.author.id + '">' + post.author.name + '</a>';
+  var html = '<li id="' + post._id + '" class="card media list-group-item p-4 post"><img class="media-object d-flex align-self-start mr-3" src="' + post.author.img + '"><div class="media-body"><div class="media-body-text"><div class="media-heading"><small class="float-right text-muted">' + time_ago(post.date) + '</small><h6><a href="../profile/' + post.author.id + '">' + post.author.name + '</a>';
   if (!(post.author.id === post.user.id)) {
-    html +='<span class="icon icon-triangle-right"></span><a href="' + post.user.id + '">' + post.user.name + '</a>';
+    html +='<span class="icon icon-triangle-right"></span><a href="../profile/' + post.user.id + '">' + post.user.name + '</a>';
   };
-  html += '</h6></div><p>' + post.content + '</p></div><div class="d-flex postData"><div class="mr-auto pt-1"><a class="likes" href="#userModal" data-toggle="modal"><span class="icon icon-heart"></span><span class="likeCount">0</span> Likes</a><span>&nbsp</span><a class="comments" href=#><span class="icon icon-message"></span><span class="commentCount">0</span> Comments</a></div><div><button class="btn btn-sm btn-outline-secondary like"><span class="icon icon-heart" style="color: red"></span></button><button class="btn btn-sm btn-outline-secondary share"><span class="icon icon-retweet" style="color: green"></span></button></div></div><ul class="media-list comment-list hidden"><li class="media mb-3"><img class="media-object d-flex align-self-start mr-3" src="'+ post.author.img +'"><div class="media-body"><form class="com-form"><input class="com-in mt-2" type="text" placeholder="Write a comment..."></form></div></li></ul></div></li>';
+  html += '</h6></div><p>' + post.content + '</p></div><div class="d-flex postData"><div class="mr-auto pt-1"><a class="likes" href="#userModal" data-toggle="modal"><span class="icon icon-heart"></span><span class="likeCount">0</span> Likes</a><span>&nbsp</span><a class="comments" href=#><span class="icon icon-message"></span><span class="commentCount">0</span> Comments</a></div><div><button class="btn btn-sm btn-outline-secondary like"><span class="icon icon-heart" style="color: #3097D1"></span></button><button class="btn btn-sm btn-outline-secondary share"><span class="icon icon-retweet" style="color: #3097D1"></span></button></div></div><ul class="media-list comment-list hidden"><li class="media mb-3"><img class="media-object d-flex align-self-start mr-3" src="'+ post.author.img +'"><div class="media-body"><form class="com-form"><input class="com-in mt-2" type="text" placeholder="Write a comment..."></form></div></li></ul></div></li>';
   return html;
 }
 
@@ -132,7 +134,7 @@ $collection.on('click', function(event) {
 //-----------FUNCTIONS/FORMATTING-----------
 
 function formatComment(comment) {
-  var html = '<li class="media mb-3"><img class="media-object d-flex align-self-start mr-3" src="' + comment.author.img + '"><div class="media-body"><div class="media-body-text"><div class="media-heading"><small class="float-right text-muted"><span class="timeStamp">' + time_ago(comment.date) + '</span></small><h6><a href=' + comment.author.id + '><strong>' + comment.author.name + ': </strong></a></h6></div>' + comment.content + '</div</div></li>';
+  var html = '<li class="media mb-3"><img class="media-object d-flex align-self-start mr-3" src="' + comment.author.img + '"><div class="media-body"><div class="media-body-text"><div class="media-heading"><small class="float-right text-muted"><span class="timeStamp">' + time_ago(comment.date) + '</span></small><h6><a href="../profile/' + comment.author.id + '"><strong>' + comment.author.name + ': </strong></a></h6></div>' + comment.content + '</div</div></li>';
   return html
 }
 
@@ -145,7 +147,7 @@ $(document).on("click", ".comments", function(event) {
   if (!($this.hasClass("populated"))){
     var postId = $this.parent().parent().parent().parent().attr("id");
     $.ajax({
-      url: "http://localhost:3000" + window.location.pathname + '/Feed/' + postId + '/comments',
+      url: "http://localhost:3000/post/comments/"  + postId,
       data: {},
       type: 'GET',
       dataType: 'json'
@@ -167,7 +169,7 @@ $(document).on("submit", ".com-form", function(event) {
   if($this.val() !== '') {
     var postId = $this.parent().parent().parent().parent().parent().parent().attr("id");
       $.ajax({
-        url: "http://localhost:3000" + window.location.pathname + '/comment/' + postId,
+        url: "http://localhost:3000/post/comment/" + postId,
         data: {
           content: $this.val()
         },
@@ -188,10 +190,10 @@ $(document).on("submit", ".com-form", function(event) {
 
 //------------FORMATTIING/FUNCTIONS-----------------
 
-function formatLikeModal(response) {
-  var html = '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Likes</h4><button id="close" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button></div><div class="modal-body p-0"><div class="modal-body-scroller"><ul class="media-list media-list-users list-group">'
+function formatUserModal(response) {
+  var html = '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">' + $this.text() + '</h4><button id="close" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button></div><div class="modal-body p-0"><div class="modal-body-scroller"><ul class="media-list media-list-users list-group">'
   response.forEach(function(like) {
-    html += '<li class="list-group-item"><div class="media w-100"><div class="media-object d-flex align-self-start mr-3" style="background-image: url(' + like.img + '); background-size: cover; background-position: center; height: 42px"></div><div class="media-body"><button class="btn btn-primary btn-sm float-right"><span class="icon icon-add-user"></span> Follow</button><a href=' + like.id + '><strong>' + like.name  + '</strong></a></div></div></li>'
+    html += '<li class="list-group-item"><div class="media w-100"><div class="media-object d-flex align-self-start mr-3" style="background-image: url(' + like.img + '); background-size: cover; background-position: center; height: 42px;"></div><div class="media-body"><button class="btn btn-primary btn-sm float-right"><span class="icon icon-add-user"></span> Follow</button><a href="../profile/' + like.id + '"><strong>' + like.name  + '</strong></a></div></div></li>'
   });
   html += '</ul></div></div></div></div>';
   return html;
@@ -202,7 +204,7 @@ $(document).on("click", ".like", function(event) {
   var $post = $this.parent().parent().parent().parent();
   var postId = $post.attr('id');
   $.ajax({
-    url: "http://localhost:3000" + window.location.pathname + '/like/' + postId,
+    url: "http://localhost:3000/post/like/" + postId,
     data: {},
     type: 'POST',
     dataType: 'json'
@@ -223,16 +225,47 @@ $(document).on("click", ".likes", function(event) {
     $this = $(this);
     var postId = $this.parent().parent().parent().parent().attr('id');
     $.ajax ({
-      url: "http://localhost:3000" + window.location.pathname + '/Feed/' + postId + '/likes',
+      url: "http://localhost:3000/post/likes/" + postId,
       data: {},
       type: 'GET',
       dataType: 'json'
     })
     .done((response) => {
       serverReturnedLikes = true;
-      $('#userModal').html(formatLikeModal(response));
+      $('#userModal').html(formatUserModal(response));
       serverReturnedLikes = false;
     })
     event.preventDefault();
   }
+})
+
+//============FOLLOWS/FOLLOWING==============
+$('#following').on("click", function(event) {
+  var url = "http://localhost:3000/user/follows";
+  if (profileId) {
+    url += "/" + profileId;
+  }
+  $.ajax({
+    url: url,
+    data: {},
+    type: 'GET',
+    dataType: 'json'
+  })
+  .done((followingArray) => {
+    console.log(followingArray)
+  })
+  event.preventDefault();
+})
+
+$('#newFollow').on('click', function(event) {
+  $this = $(this);
+  $.ajax({
+    url: "http://localhost:3000/user/addFollowing/" + profileId,
+    data: {},
+    type: 'POST',
+    dataType: 'json'
+  })
+  .done(function(response) {
+    $this.remove()
+  })
 })

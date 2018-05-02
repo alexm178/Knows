@@ -21,6 +21,7 @@
     <link href="../../assets/css/toolkit.css" rel="stylesheet">
 
     <link href="../../assets/css/application.css" rel="stylesheet">
+    <link href="../../assets/css/profile.css" rel="stylesheet">
 
     <style>
       /* note: this is a hack for ios iframe for bootstrap themes shopify page */
@@ -403,14 +404,14 @@
 
           <ul class="card-menu">
             <li class="card-menu-item">
-              <a href="#userModal" class="text-inherit" data-toggle="modal">
+              <a id="following" href="#userModal" class="text-inherit" data-toggle="modal">
                 Following
-                <h6 class="my-0"><%= user.follows.length %></h6>
+                <h6 class="my-0"><%= user.following.length %></h6>
               </a>
             </li>
 
             <li class="card-menu-item">
-              <a href="#userModal" class="text-inherit" data-toggle="modal">
+              <a id="#followers" href="#userModal" class="text-inherit" data-toggle="modal">
                 Followers
                 <h6 class="my-0"><%= user.followers.length %></h6>
               </a>
@@ -467,121 +468,78 @@
     <div class="col-lg-6">
 
       <ul class="list-group media-list media-list-stream mb-4">
-
-        <li class="media list-group-item p-4">
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Message">
-            <div class="input-group-btn">
-              <button type="button" class="btn btn-secondary">
-                <span class="icon icon-camera"></span>
-              </button>
+        <li id='postCard' class="card media list-group-item p-4">
+          <form id='newPost' method='post'>
+            <textarea id='postInput' method='post' form='newPost' type='text' name='postInput' placeholder='What are you working on?'></textarea>
+            <div id='postButtons'>
+              <button class='btn btn-md btn-secondary'><span class='icon icon-camera'></span></button>
+              <button class='btn btn-md btn-primary'><span class='icon icon-paper-plane'></span></button>
             </div>
-          </div>
+          </form>
         </li>
-
-        <li class="media list-group-item p-4">
-          <img
-            class="media-object d-flex align-self-start mr-3"
-            src="../../assets/img/avatar-dhg.png">
-          <div class="media-body">
-            <div class="media-heading">
-              <small class="float-right text-muted">4 min</small>
-              <h6>Dave Gamache</h6>
+          <div id='posts'>
+          <% posts.forEach((post) => { %>
+            <li id="<%= post._id %>" class="card media list-group-item p-4 post">
+            <div
+              class="media-object d-flex align-self-start mr-3"
+              style="background-image: url(<%= post.author.img %>); background-size: cover; background-position: center;">
             </div>
-
-            <p>
-              Aenean lacinia bibendum nulla sed consectetur. Vestibulum id ligula porta felis euismod semper. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-            </p>
-
-            <div class="media-body-inline-grid" data-grid="images">
-              <div style="display: none">
-                <img data-action="zoom" data-width="1050" data-height="700" src="../../assets/img/unsplash_1.jpg">
-              </div>
-
-              <div style="display: none">
-                <img data-action="zoom" data-width="640" data-height="640" src="../../assets/img/instagram_1.jpg">
-              </div>
-
-              <div style="display: none">
-                <img data-action="zoom" data-width="640" data-height="640" src="../../assets/img/instagram_13.jpg">
-              </div>
-
-              <div style="display: none">
-                <img data-action="zoom" data-width="1048" data-height="700" src="../../assets/img/unsplash_2.jpg">
-              </div>
-            </div>
-
-            <ul class="media-list mb-2">
-              <li class="media mb-3">
-                <img
-                  class="media-object d-flex align-self-start mr-3"
-                  src="../../assets/img/avatar-fat.jpg">
-                <div class="media-body">
-                  <strong>Jacon Thornton: </strong>
-                  Donec id elit non mi porta gravida at eget metus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Donec ullamcorper nulla non metus auctor fringilla. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Sed posuere consectetur est at lobortis.
+            <div class="media-body">
+              <div class="media-body-text">
+                <div class="media-heading">
+                  <small class="float-right text-muted"><span class="timeStamp"><%= post.date %></span></small>
+                  <h6>
+                    <a href='../profile/<%= post.author.id %>'><%= post.author.name %></a>
+                    <% if (!post.author.id.equals(post.user.id)) { %>
+                      <span class="icon icon-triangle-right"></span>
+                      <a href='../profile/<%= post.user.id %>'><%= post.user.name %></a>
+                    <% } %>
+                  </h6>
                 </div>
-              </li>
-              <li class="media">
-                <img
-                  class="media-object d-flex align-self-start mr-3"
-                  src="../../assets/img/avatar-mdo.png">
-                <div class="media-body">
-                  <strong>Mark Otto: </strong>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
-                </div>
-              </li>
-            </ul>
-          </div>
-        </li>
-
-        <li class="media list-group-item p-4">
-          <img
-            class="media-object d-flex align-self-start mr-3"
-            src="../../assets/img/avatar-fat.jpg">
-          <div class="media-body">
-            <div class="media-body-text">
-              <div class="media-heading">
-                <small class="float-right text-muted">12 min</small>
-                <h6>Jacob Thornton</h6>
+                <p>
+                  <%= post.content %>
+                </p>
               </div>
-              <p>
-                Donec id elit non mi porta gravida at eget metus. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              </p>
-            </div>
-          </div>
-        </li>
-
-        <li class="media list-group-item p-4">
-          <img
-            class="media-object d-flex align-self-start mr-3"
-            src="../../assets/img/avatar-mdo.png">
-          <div class="media-body">
-            <div class="media-heading">
-              <small class="float-right text-muted">34 min</small>
-              <h6>Mark Otto</h6>
-            </div>
-
-            <p>
-              Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
-            </p>
-
-            <div class="media-body-inline-grid" data-grid="images">
-              <img style="display: none" data-width="640" data-height="640" data-action="zoom" src="../../assets/img/instagram_3.jpg">
-            </div>
-
-            <ul class="media-list">
-              <li class="media">
-                <img
-                  class="media-object d-flex align-self-start mr-3"
-                  src="../../assets/img/avatar-dhg.png">
-                <div class="media-body">
-                  <strong>Dave Gamache: </strong>
-                  Donec id elit non mi porta gravida at eget metus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Donec ullamcorper nulla non metus auctor fringilla. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Sed posuere consectetur est at lobortis.
+              <div class='d-flex postData'>
+                <div class="mr-auto pt-1">
+                  <a class="likes" href="#userModal" data-toggle="modal"><span class="icon icon-heart"></span><span class="likeCount"><%= ' ' + post.likes.length %></span> Likes</a>
+                  <span>&nbsp</span>
+                  <a class="comments" href=#><span class="icon icon-message"></span><span class="commentCount"><%= ' ' + post.comments.length %></span> Comments</a>
                 </div>
-              </li>
-            </ul>
-          </div>
-        </li>
+                <div>
+                  <% var liked = false; %>
+                  <% post.likes.forEach(function(like) { %>
+                    <% if (like.id.equals(user._id)) { %>
+                      <% liked = true %>
+                    <% } %>
+                  <% }) %>
+                  <% if (!liked) { %>
+                    <button class='btn btn-sm btn-outline-secondary like'><span class='icon icon-heart' style='color: #3097D1'></span></button>
+                  <% } %>
+                  <button class='btn btn-sm btn-outline-secondary share'><span class='icon icon-retweet' style='color: #3097D1'></span></button>
+                </div>
+              </div>
+                <ul class="media-list comment-list hidden">
+                 <li class="media mb-3">
+
+                  <div
+                    class="media-object d-flex align-self-start mr-3" style="background-image: url(<%= user.img %>); height: 40px; background-size: cover; background-position: center; display: inline-block">
+                  </div>
+                  <div class="media-body">
+                    <form class="com-form" method="post">
+                      <input class="com-in mt-2" type="text" placeholder="Write a comment...">
+                    </form>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+
+          </li>
+
+          <% }) %>
+        </div>
+
       </ul>
     </div>
     <div class="col-lg-3">
@@ -666,6 +624,7 @@
     <script src="../../assets/js/chart.js"></script>
     <script src="../../assets/js/toolkit.js"></script>
     <script src="../../assets/js/application.js"></script>
+    <script src="../../assets/js/profile.js"></script>
     <script>
       // execute/clear BS loaders for docs
       $(function(){

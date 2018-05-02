@@ -70,12 +70,16 @@ passport.deserializeUser(User.deserializeUser());
 
 
 //ROUTES========================================
+app.get('/', isLoggedIn, (req, res) => {
+  res.redirect('/dash/' + req.user._id)
+})
+
 app.get('/dash/:id', isLoggedIn, (req, res) => {
     User.findById(req.params.id).populate('posts').then((user) => {
-      if (req.user.follows.length > 0) {
+      if (req.user.following.length > 0) {
         var posts = user.posts;
-        user.follows.forEach((followId) => {
-          User.findById(followId).populate('posts').then((follow) => {
+        user.following.forEach((following) => {
+          User.findById(following.id).populate('posts').then((follow) => {
             follow.posts.forEach((post) => {
               posts.push(post)
             })
@@ -86,7 +90,7 @@ app.get('/dash/:id', isLoggedIn, (req, res) => {
           })
         })
       } else {
-        res.render('dash', {user: user, posts: []})
+        res.render('dash', {user: user, posts: user.posts})
       }
     })
 })
@@ -105,12 +109,12 @@ app.post('/dash/:id/newPost', isLoggedIn, (req, res) => {
 //===================================
 // Login
 //========================
-app.get('/', (req, res) => {
+app.get('/login', (req, res) => {
   res.render('login')
 })
 
-app.post('/', passport.authenticate('local', {
-  failureRedirect: '/',
+app.post('/login', passport.authenticate('local', {
+  failureRedirect: '/login',
 }), (req, res) =>{
   res.redirect('/dash/' + req.user._id)
 });
@@ -119,12 +123,12 @@ app.post('/', passport.authenticate('local', {
 
 app.get('/logout', (req, res) => {
   req.logout();
-  res.redirect('/');
+  res.redirect('/login');
 })
 
 //===================
 app.get('/signup', (req, res) => {
-  res.render('login/signup');
+  res.render('signup');
 })
 
 app.post('/signup', (req, res) => {
@@ -140,15 +144,13 @@ app.post('/signup', (req, res) => {
             return res.redirect('/dash/' + req.user._id)
         }
       });
-
-
     }
   })
 })
 
 
 //===================================
-app.get('/profile/:id/:collection?/:postId?/:postAction?', (req, res) => {
+app.get('/profile/:id/:collection?', (req, res) => {
   switch (req.params.collection) {
     case undefined:
       getProfile(req, res);
@@ -173,38 +175,26 @@ function getProfile(req, res) {
        profile.posts.reverse();
        var editor = (req.user._id.equals(profile.id));
        User.findById(req.user._id, (err, user) => {
-         var follows = false;
-         user.follows.forEach((follow) => {
-           if (follow.equals(profile.id)) {
-             follows = true;
+         var isFollowing = false;
+         user.following.forEach((following) => {
+           if (following.id.equals(profile._id)) {
+             isFollowing = true;
            }
          })
-         res.render('profile', {user: user, profile: profile, editor: editor, follows: follows})
+         res.render('profile', {user: user, profile: profile, editor: editor, isFollowing: isFollowing})
        })
      }
   });
 }
 
 function getFeed(req, res) {
-  if (req.params.postId) {
-    if (req.params.postAction === 'comments') {
-      Post.findById(req.params.postId).populate("comments").exec(function (err, post) {
-        res.json(post.comments);
-      })
-    } else if (req.params.postAction === 'likes'){
-      Post.findById(req.params.postId).populate("likes").exec(function (err, post) {
-        res.json(post.likes);
-      })
-    }
-  } else {
-    User.findById(req.params.id).populate("posts").exec(function(err, profile) {
-       if(err) {
-         console.log(err)
-       } else {
-         res.json({posts: profile.posts})
-       }
-    });
-  }
+  User.findById(req.params.id).populate("posts").exec(function(err, profile) {
+     if(err) {
+       console.log(err)
+     } else {
+       res.json({posts: profile.posts})
+     }
+  });
 }
 
 function getProjects(req, res) {
@@ -215,43 +205,17 @@ function getPhotos(req, res) {
   res.json({html: '<h1>Photos Here</h1>'})
 }
 
-app.post('/profile/:id/:action/:postId?', isLoggedIn, (req, res) => {
+app.post('/profile/:id/:action', isLoggedIn, (req, res) => {
   switch (req.params.action) {
-    case 'follow':
-      addFollow(req, res);
-      break;
     case 'newPost':
       newPost(req, res);
       break;
     case 'editBio':
       editBio(req, res);
       break;
-    case 'comment':
-      newComment(req, res);
-      break;
-    case 'like':
-      likePost(req, res);
-      break;
   }
 })
 
-
-
-function addFollow(req, res) {
-  User.findById(req.user._id, (err, user) => {
-    if (err) {
-      console.log(err);
-    } else {
-      user.follows.push(req.params.id);
-      user.save();
-      User.findById(req.params.id, (err, profile) => {
-        profile.followers.push(req.user._id)
-        profile.save();
-        res.end('{"success" : "Updated Successfully", "status" : 200}');
-      })
-    }
-  })
-}
 
 function editBio(req, res) {
   User.findById(req.params.id, (err, profile) => {
@@ -286,6 +250,43 @@ function newPost(req, res) {
   })
 }
 
+
+//=============POST ACTION ROUTES=========================
+app.get("/post/:action/:postId", isLoggedIn, (req, res) => {
+  switch (req.params.action) {
+    case 'comments':
+      getComments(req, res);
+      break;
+    case 'likes':
+      getLikes(req, res);
+      break;
+  }
+})
+
+function getComments(req, res) {
+  Post.findById(req.params.postId).populate("comments").exec(function (err, post) {
+    res.json(post.comments);
+  })
+}
+
+function getLikes(req, res) {
+  Post.findById(req.params.postId).populate("likes").exec(function (err, post) {
+    res.json(post.likes);
+  })
+}
+
+
+app.post("/post/:action/:postId", isLoggedIn, (req, res) => {
+  switch (req.params.action) {
+    case 'comment':
+      newComment(req, res);
+      break;
+    case 'like':
+      likePost(req, res);
+      break;
+  }
+})
+
 function newComment(req, res) {
   Post.findById(req.params.postId, (err, post) => {
     if (err) {
@@ -296,7 +297,7 @@ function newComment(req, res) {
         comment.author.id = req.user._id;
         comment.author.name = req.user.firstName + ' ' + req.user.lastName;
         comment.author.img = req.user.img;
-        comment.post = req.params.postId;
+        comment.post = post._id;
         comment.save();
         post.comments.push(comment._id);
         post.save();
@@ -322,7 +323,73 @@ function likePost(req, res) {
     }
   })
 }
-//======================================
+
+
+//==============USER ACTION ROUTES====================
+app.get("/user/:info/:id?", (req, res) => {
+  switch (req.params.info) {
+    case "following":
+      getFollowing(req, res);
+      break;
+    case "followers":
+      getFollowers(req, res);
+      break;
+  }
+})
+
+function getFollowing(req, res) {
+  var id = req.user._id;
+  if (req.params.id) {
+    id = req.params.id;
+  }
+  User.findById(id, function(err, user) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(user.following)
+    }
+  })
+}
+
+app.post("/user/:action/:id", isLoggedIn, (req, res) => {
+  switch(req.params.action) {
+    case "addFollowing":
+      addFollowing(req, res);
+      break;
+  }
+})
+
+function addFollowing(req, res) {
+  User.findById(req.params.id, (err, following) => {
+    if (err) {
+      console.log(err);
+    } else {
+      var newFollowing = {
+        id: following._id,
+        name: following.firstName + ' ' + following.lastName,
+        img: following.img
+      };
+      User.findById(req.user._id, (err, user) => {
+        if (err) {
+          console.log(err);
+        } else {
+          var follower = {
+            id: user._id,
+            name: user.firstName + ' ' + user.lastName,
+            img: user.img
+          }
+          following.followers.push(follower);
+          following.save();
+          user.following.push(newFollowing);
+          user.save();
+          res.end('{"success" : "Followed Successfully", "status" : 200}');
+        }
+      })
+    }
+  })
+}
+
+//========================================================
 app.get('/notifications', isLoggedIn, (req, res) => {
   res.render('notifications')
 })

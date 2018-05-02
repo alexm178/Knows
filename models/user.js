@@ -10,10 +10,14 @@ var userSchema = new mongoose.Schema({
   knows: Array,
   img: String,
   bio: String,
-  follows: [
+  following: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User'
+        },
+      name: String,
+      img: String
     }
   ],
   posts: [
@@ -24,8 +28,12 @@ var userSchema = new mongoose.Schema({
   ],
   followers: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User'
+        },
+      name: String,
+      img: String
     }
   ]
 });
