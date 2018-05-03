@@ -1,8 +1,12 @@
+
+
 //==========INITIAL FORMATTING================================
 
 //---------VARIABLES-----------------
 var $timestamps = $('.timeStamp');
 var profileId = $('.profileId').attr('id');
+var userId = $('.userId').attr('id');
+
 
 
 //---------FUNCTIONS-----------------
@@ -53,6 +57,23 @@ function time_ago(time) {
 $timestamps.each((i) => {
   $timestamps[i].innerHTML = time_ago(Number($timestamps[i].innerHTML))
 })
+
+//=================NOTIFICATIONS===========================
+
+var io = io();
+io.on('connect', function() {
+  io.emit('id', {userId: userId})
+})
+
+io.on('notification', function(notification) {
+  console.log('notification recieved')
+  $('#app-growl').append(formatGrowl(notification))
+})
+
+function formatGrowl(notification) {
+  var html = '<div class="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + notification.name + ' ' + notification.action + ' ' + 'your' + ' ' + notification.targetType + '</div>';
+  return html;
+}
 
 
 //=================POSTS====================================
@@ -212,7 +233,8 @@ $(document).on("click", ".like", function(event) {
   .done((response) => {
     $this.addClass('hidden');
     var likeCount = $this.parent().parent().children(".pt-1").children(".likes").children('.likeCount');
-    likeCount.html(Number(likeCount.html()) + 1)
+    likeCount.html(Number(likeCount.html()) + 1);
+    io.emit('like', {userId: userId, postId: postId})
   })
 })
 

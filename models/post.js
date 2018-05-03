@@ -30,11 +30,12 @@ var postSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
       },
-      name: String,
-      img: String
+      name: 'String',
+      img: 'String'
     }
   ],
-  date: 'Number'
+  date: 'Number',
+  type: 'String',
 
 });
 

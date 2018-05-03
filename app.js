@@ -9,6 +9,33 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var passportLocalMongoose = require('passport-local-mongoose');
 var MongoStore = require('connect-mongo')(session);
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+io.on('connection', function(socket){
+  io.to(socket.id).emit('connect');
+  socket.on('id', function(data) {
+    User.findById(data.userId, function(err, user) {
+      if(err) {
+        console.log(err)
+      } else {
+        user.socket = socket.id;
+        user.save();
+      }
+    });
+  })
+  socket.on('like', function(data) {
+    Post.findById(data.postId, (err, post) => {
+      User.findById(post.user.id, (err, user) => {
+        console.log(user.notifications[0])
+        socket.to(user.socket).emit('notification', user.notifications[0])
+      })
+    })
+  })
+})
+
+
+
 
 
 mongoose.connect("mongodb://localhost/knows");
@@ -241,6 +268,7 @@ function newPost(req, res) {
         post.author.img = req.user.img;
         post.user.id = profile.id;
         post.user.name = profile.firstName + ' ' + profile.lastName;
+        post.type = 'post';
         post.save();
         profile.posts.push(post);
         profile.save();
@@ -308,6 +336,21 @@ function newComment(req, res) {
   })
 }
 
+function createCommentNotification(comment, post, req, res) {
+  User.findById(post.user.id, (err, user) => {
+    var notification = {
+        name: comment.author.name,
+        action: "commented",
+        target: {
+          type: post.type,
+          id: post._id
+        }
+    }
+    user.notifications.push(notification);
+    user.save();
+  })
+}
+
 function likePost(req, res) {
   Post.findById(req.params.postId, (err, post) => {
     if (err) {
@@ -320,11 +363,28 @@ function likePost(req, res) {
       };
       post.likes.push(newLike);
       post.save();
+      createLikeNotification(post, req, res);
       res.end('{"success" : "Liked Successfully", "status" : 200}');
     }
   })
 }
 
+function createLikeNotification(post, req, res) {
+  User.findById(post.user.id, (err, user) => {
+    if (err) {
+      console.log(err)
+    } else {
+      var notification = {
+          name: req.user.firstName + ' ' + req.user.lastName,
+          action: "liked",
+          targetType: post.type,
+          targetId: post._id
+      }
+      user.notifications.push(notification);
+      user.save();
+      }
+  })
+}
 
 //==============USER ACTION ROUTES====================
 app.get("/user/:info/:id?", (req, res) => {
@@ -416,6 +476,6 @@ function isLoggedIn(req, res, next) {
   res.redirect('/login')
 }
 
-app.listen(3000, () => {
-  console.log('listening 300')
+http.listen(3000, function() {
+  console.log("listening on 3000")
 })

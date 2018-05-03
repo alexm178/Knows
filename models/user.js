@@ -35,7 +35,19 @@ var userSchema = new mongoose.Schema({
       name: String,
       img: String
     }
-  ]
+  ],
+  notifications: [
+    {
+      name: String,
+      action: String,
+      targetType: String,
+      targetId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post'
+      }
+    }
+  ],
+  socket: String
 });
 
 userSchema.plugin(passportLocalMongoose);
