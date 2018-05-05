@@ -31,43 +31,6 @@ router.get('/dash/:id', isLoggedIn, (req, res) => {
 })
 
 
-router.post('/dash/:id/newPost', isLoggedIn, (req, res) => {
-  User.findById(req.params.id, (err, user) => {
-    if(err) {
-      console.log(err)
-      res.redirect('/dash/' + req.params.id)
-    } else {
-      newPost(req, res);
-    }
-  })
-})
-
-function newPost(req, res) {
-  User.findById(req.params.id, (err, profile) => {
-    if (err) {
-      console.log (err)
-    } else {
-    Post.create({content: req.body.content}, (err, post) => {
-      if (err) {
-        console.log(err);
-      } else {
-        post.date = Date.now();
-        post.author.id = req.user._id;
-        post.author.name = req.user.firstName + ' ' + req.user.lastName;
-        post.author.img = req.user.img;
-        post.user.id = profile.id;
-        post.user.name = profile.firstName + ' ' + profile.lastName;
-        post.type = 'post';
-        post.save();
-        profile.posts.push(post);
-        profile.save();
-        res.json(post);
-      }
-    })
-   }
-  })
-}
-
 function isLoggedIn(req, res, next) {
   if(req.isAuthenticated()) {
     return next();

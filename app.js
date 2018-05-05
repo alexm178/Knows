@@ -19,8 +19,14 @@ io.on('connect', function(socket){
    ioModule.id(data, socket);
  });
  socket.on('like', function(data) {
-   ioModule.like(data, socket);
+   ioModule.likeOrComment(data, socket);
  });
+ socket.on('comment', function(data) {
+   ioModule.likeOrComment(data, socket);
+ })
+ socket.on('post', function(data) {
+   ioModule.post(data, socket);
+ })
 })
 
 

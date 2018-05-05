@@ -71,10 +71,12 @@ io.on('notification', function(notificationData) {
 
 function formatGrowl(notificationData) {
   var notification = notificationData.notification;
-  if (notificationData.role === 'user' && notification.multipleUsers) {
-    var html = '<div class="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button><a href="../profile/' + notification.userId + '">' + notification.userName + '</a> ' + notification.action + ' ' + 'a' + ' <a href="../post/show/' + notification.targetId +'">' + notification.targetType + '</a> that you are tagged in.</div>';
+  if (notificationData.role === 'post') {
+    var html = '<div class="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button><a href="../profile/' + notification.userId + '">' + notification.userName + '</a> ' + 'made a <a href="../post/show/' + notification.targetId + '">'+ notification.targetType + '</a> on your profile</div>'
+  } else if (notificationData.role === 'user' && notification.multipleUsers) {
+    var html = '<div class="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button><a href="../profile/' + notification.userId + '">' + notification.userName + '</a> ' + notification.action + ' a' + ' <a href="../post/show/' + notification.targetId +'">' + notification.targetType + '</a> that you are tagged in.</div>';
   } else {
-    var html = '<div class="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button><a href="../profile/' + notification.userId + '">' + notification.userName + '</a> ' + notification.action + ' ' + 'your' + ' <a href="../post/show/' + notification.targetId + '">'+ notification.targetType + '</a></div>';
+    var html = '<div class="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button><a href="../profile/' + notification.userId + '">' + notification.userName + '</a> ' + notification.action + ' your' + ' <a href="../post/show/' + notification.targetId + '">'+ notification.targetType + '</a></div>';
   }
   return html;
 }
@@ -103,7 +105,7 @@ function formatPost(post) {
 //-------------AJAX---------------------
 $newPost.submit(function(event) {
   $.ajax({
-    url: "http://localhost:3000" + window.location.pathname + "/newPost",
+    url: "http://localhost:3000/post/new/" + profileId,
     data: {
       content: $postInput.val()
     },
@@ -113,6 +115,9 @@ $newPost.submit(function(event) {
   .done(function(post) {
     $(formatPost(post)).prependTo($posts).hide().slideDown();
     $postInput.val('');
+    if (!(post.user.id === post.author.id)) {
+      io.emit('post', {post: post})
+    }
   })
   event.preventDefault();
 })
@@ -194,7 +199,7 @@ $(document).on("submit", ".com-form", function(event) {
   if($this.val() !== '') {
     var postId = $this.parent().parent().parent().parent().parent().parent().attr("id");
       $.ajax({
-        url: "http://localhost:3000/post/comment/" + postId,
+        url: "http://localhost:3000/post/comment/" + profileId + '/' +postId,
         data: {
           content: $this.val()
         },
@@ -205,7 +210,8 @@ $(document).on("submit", ".com-form", function(event) {
         $this.parent().parent().parent().before(formatComment(comment))
         $this.val('')
         var commentCount = $this.parents(".media-body").children(".postData").children(".pt-1").children(".comments").children(".commentCount");
-        commentCount.html(Number(commentCount.html()) + 1)
+        commentCount.html(Number(commentCount.html()) + 1);
+        io.emit('comment', {userId: userId, postId: postId})
       })
   }
   event.preventDefault()
@@ -229,7 +235,7 @@ $(document).on("click", ".like", function(event) {
   var $post = $this.parent().parent().parent().parent();
   var postId = $post.attr('id');
   $.ajax({
-    url: "http://localhost:3000/post/like/" + postId,
+    url: "http://localhost:3000/post/like/" + profileId + '/' + postId,
     data: {},
     type: 'POST',
     dataType: 'json'

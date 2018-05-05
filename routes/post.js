@@ -43,13 +43,16 @@ function showPost(req, res) {
 }
 
 
-router.post("/post/:action/:postId", isLoggedIn, (req, res) => {
+router.post("/post/:action/:id/:postId?", isLoggedIn, (req, res) => {
   switch (req.params.action) {
     case 'comment':
       newComment(req, res);
       break;
     case 'like':
       likePost(req, res);
+      break;
+    case 'new':
+      newPost(req, res);
       break;
   }
 })
@@ -68,24 +71,31 @@ function newComment(req, res) {
         comment.save();
         post.comments.push(comment._id);
         post.save();
+        createCommentNotification(post, req, res);
         res.json(comment);
       })
     }
   })
 }
 
-function createCommentNotification(comment, post, req, res) {
-  User.findById(post.user.id, (err, user) => {
+function createCommentNotification(post, req, res) {
+  User.findById(post.author.id, (err, author) => {
     var notification = {
-        name: comment.author.name,
+        userName: req.user.firstName + ' ' + req.user.lastName,
+        userId: req.user._id,
         action: "commented",
-        target: {
-          type: post.type,
-          id: post._id
-        }
+        targetType: post.type,
+        targetId: post._id,
+        multipleUsers: (!(post.user.id.equals(post.author.id)))
     }
-    user.notifications.push(notification);
-    user.save();
+    author.notifications.push(notification);
+    author.save();
+    if (notification.multipleUsers) {
+      User.findById(post.user.id, (err, user) => {
+        user.notifications.push(notification);
+        user.save()
+      })
+    }
   })
 }
 
@@ -125,10 +135,57 @@ function createLikeNotification(post, req, res) {
       if (notification.multipleUsers) {
         User.findById(post.author.id, (err, author) => {
           author.notifications.push(notification);
+          author.save();
         })
       }
     }
   })
+}
+
+function newPost(req, res) {
+  User.findById(req.params.id, (err, profile) => {
+    if (err) {
+      console.log (err)
+    } else {
+    Post.create({content: req.body.content}, (err, post) => {
+      if (err) {
+        console.log(err);
+      } else {
+        post.date = Date.now();
+        post.author.id = req.user._id;
+        post.author.name = req.user.firstName + ' ' + req.user.lastName;
+        post.author.img = req.user.img;
+        post.user.id = profile.id;
+        post.user.name = profile.firstName + ' ' + profile.lastName;
+        post.type = 'post';
+        post.save();
+        profile.posts.push(post);
+        profile.save();
+        createPostNotification(post, req, res)
+        res.json(post);
+      }
+    })
+   }
+  })
+}
+
+function createPostNotification(post, req, res) {
+  if (post.user.id.equals(post.author.id)) {
+    return false;
+  } else {
+    User.findById(post.user.id, (err, user) => {
+      var notification = {
+          userName: req.user.firstName + ' ' + req.user.lastName,
+          userId: req.user._id,
+          action: "posted",
+          targetType: post.type,
+          targetId: post._id,
+          multipleUsers: true
+      }
+      user.notifications.push(notification);
+      user.save();
+    })
+  }
 }
 
 function isLoggedIn(req, res, next) {
