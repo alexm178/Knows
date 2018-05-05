@@ -115,11 +115,17 @@ $newPost.submit(function(event) {
   .done(function(post) {
     $(formatPost(post)).prependTo($posts).hide().slideDown();
     $postInput.val('');
+    io.emit('post', {post: post})
     if (!(post.user.id === post.author.id)) {
-      io.emit('post', {post: post})
+      io.emit('multipleUserPost', {post: post})
     }
   })
   event.preventDefault();
+})
+
+//-------------socket---------------------
+io.on('post', function(postData) {
+  $(formatPost(postData.post)).prependTo($posts).hide().slideDown();
 })
 
 
