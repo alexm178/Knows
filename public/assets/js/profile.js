@@ -61,17 +61,21 @@ $timestamps.each((i) => {
 //=================NOTIFICATIONS===========================
 
 var io = io();
-io.on('connect', function() {
-  io.emit('id', {userId: userId})
+
+
+io.emit('id', {userId: userId})
+
+io.on('notification', function(notificationData) {
+  $('#app-growl').append(formatGrowl(notificationData))
 })
 
-io.on('notification', function(notification) {
-  console.log('notification recieved')
-  $('#app-growl').append(formatGrowl(notification))
-})
-
-function formatGrowl(notification) {
-  var html = '<div class="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' + notification.name + ' ' + notification.action + ' ' + 'your' + ' ' + notification.targetType + '</div>';
+function formatGrowl(notificationData) {
+  var notification = notificationData.notification;
+  if (notificationData.role === 'user' && notification.multipleUsers) {
+    var html = '<div class="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button><a href="../profile/' + notification.userId + '">' + notification.userName + '</a> ' + notification.action + ' ' + 'a' + ' <a href="../post/show/' + notification.targetId +'">' + notification.targetType + '</a> that you are tagged in.</div>';
+  } else {
+    var html = '<div class="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button><a href="../profile/' + notification.userId + '">' + notification.userName + '</a> ' + notification.action + ' ' + 'your' + ' <a href="../post/show/' + notification.targetId + '">'+ notification.targetType + '</a></div>';
+  }
   return html;
 }
 
