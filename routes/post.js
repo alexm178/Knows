@@ -60,25 +60,57 @@ router.post("/post/:action/:id/:postId?", isLoggedIn, (req, res) => {
 function newComment(req, res) {
   Post.findById(req.params.postId, (err, post) => {
     if (err) {
-      console.log(err);
+      console.log(err)
     } else {
-      Comment.create({content: req.body.content}, (err, comment) => {
-        comment.date = Date.now();
-        comment.author.id = req.user._id;
-        comment.author.name = req.user.firstName + ' ' + req.user.lastName;
-        comment.author.img = req.user.img;
-        comment.post = post._id;
-        comment.save();
-        post.comments.push(comment._id);
-        post.save();
-        createCommentNotification(post, req, res);
-        res.json(comment);
-      })
+      manageSubs(req, post);
+      var newComment = new Comment(formatComment(req, post)).save()
+      .then(
+        (comment) => {
+          post.comments.push(comment._id);
+          post.save()
+          .then(
+            (post) => {
+              notifyAuthor(req, post);
+              notifySubs(req, post);
+              res.json(comment);
+            }
+          )
+          .catch(
+            (err) => console.log(err)
+          )
+        }
+      )
+      .catch(
+        (err) => console.log(err)
+      )
     }
   })
 }
 
-function createCommentNotification(post, req, res) {
+function manageSubs(req, post) {
+  var isSub = post.subs.some((sub) => {
+    return sub.equals(req.user._id)
+  })
+  if (!isSub && !post.author.id.equals(req.user._id)) {
+    post.subs.push(req.user._id);
+    post.save()
+  }
+}
+
+function formatComment(req, post) {
+  var comment = {};
+  comment.content = req.body.content;
+  comment.date = Date.now();
+  comment.author = {
+    id: req.user._id,
+    name: req.user.firstName + ' ' + req.user.lastName
+  };
+  comment.author.img = req.user.img;
+  comment.post = post._id;
+  return comment
+}
+
+function notifyAuthor(req, post) {
   User.findById(post.author.id, (err, author) => {
     var notification = {
         userName: req.user.firstName + ' ' + req.user.lastName,
@@ -86,18 +118,32 @@ function createCommentNotification(post, req, res) {
         action: "commented",
         targetType: post.type,
         targetId: post._id,
-        multipleUsers: (!(post.user.id.equals(post.author.id)))
     }
     author.notifications.push(notification);
     author.save();
-    if (notification.multipleUsers) {
-      User.findById(post.user.id, (err, user) => {
-        user.notifications.push(notification);
-        user.save()
-      })
-    }
   })
 }
+
+function notifySubs(req, post) {
+  post.subs.forEach((sub) => {
+    if (!sub.equals(req.user._id)) {
+        var notification = {
+          userName: req.user.firstName + ' ' + req.user.lastName,
+          userId: req.user._id,
+          action: "also commented",
+          targetType: post.type,
+          targetId: post._id,
+          possessive: post.author.name + "'s",
+        };
+        User.update({_id: sub}, {$push: {notifications: notification}}, {upsert: true}, function(err) {
+          if (err) {
+            console.log(err)
+          } 
+        })
+      }
+    })
+}
+
 
 function likePost(req, res) {
   Post.findById(req.params.postId, (err, post) => {
@@ -118,7 +164,7 @@ function likePost(req, res) {
 }
 
 function createLikeNotification(post, req, res) {
-  User.findById(post.user.id, (err, postOwner) => {
+  User.findById(post.author.id, (err, author) => {
     if (err) {
       console.log(err)
     } else {
@@ -128,16 +174,9 @@ function createLikeNotification(post, req, res) {
           action: "liked",
           targetType: post.type,
           targetId: post._id,
-          multipleUsers: (!(post.user.id.equals(post.author.id)))
       }
-      postOwner.notifications.push(notification);
-      postOwner.save();
-      if (notification.multipleUsers) {
-        User.findById(post.author.id, (err, author) => {
-          author.notifications.push(notification);
-          author.save();
-        })
-      }
+      author.notifications.push(notification);
+      author.save();
     }
   })
 }
@@ -155,13 +194,10 @@ function newPost(req, res) {
         post.author.id = req.user._id;
         post.author.name = req.user.firstName + ' ' + req.user.lastName;
         post.author.img = req.user.img;
-        post.user.id = profile.id;
-        post.user.name = profile.firstName + ' ' + profile.lastName;
         post.type = 'post';
         post.save();
         profile.posts.push(post);
         profile.save();
-        createPostNotification(post, req, res)
         res.json(post);
       }
     })
@@ -169,24 +205,6 @@ function newPost(req, res) {
   })
 }
 
-function createPostNotification(post, req, res) {
-  if (post.user.id.equals(post.author.id)) {
-    return false;
-  } else {
-    User.findById(post.user.id, (err, user) => {
-      var notification = {
-          userName: req.user.firstName + ' ' + req.user.lastName,
-          userId: req.user._id,
-          action: "posted",
-          targetType: post.type,
-          targetId: post._id,
-          multipleUsers: true
-      }
-      user.notifications.push(notification);
-      user.save();
-    })
-  }
-}
 
 function isLoggedIn(req, res, next) {
   if(req.isAuthenticated()) {

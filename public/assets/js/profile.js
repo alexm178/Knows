@@ -71,13 +71,13 @@ io.on('notification', function(notificationData) {
 
 function formatGrowl(notificationData) {
   var notification = notificationData.notification;
-  if (notificationData.role === 'post') {
-    var html = '<div class="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button><a href="../profile/' + notification.userId + '">' + notification.userName + '</a> ' + 'made a <a href="../post/show/' + notification.targetId + '">'+ notification.targetType + '</a> on your profile</div>'
-  } else if (notificationData.role === 'user' && notification.multipleUsers) {
-    var html = '<div class="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button><a href="../profile/' + notification.userId + '">' + notification.userName + '</a> ' + notification.action + ' a' + ' <a href="../post/show/' + notification.targetId +'">' + notification.targetType + '</a> that you are tagged in.</div>';
+  var html = '<div class="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button><a href="../profile/' + notification.userId + '">' + notification.userName + '</a> ' + notification.action;
+  if (notification.possessive) {
+    html += ' ' + notification.possessive;
   } else {
-    var html = '<div class="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button><a href="../profile/' + notification.userId + '">' + notification.userName + '</a> ' + notification.action + ' your' + ' <a href="../post/show/' + notification.targetId + '">'+ notification.targetType + '</a></div>';
+    html += ' your';
   }
+  html += ' <a href="../post/show/' + notification.targetId + '">'+ notification.targetType + '</a></div>';
   return html;
 }
 
@@ -94,9 +94,6 @@ var $posts = $('#posts');
 
 function formatPost(post) {
   var html = '<li id="' + post._id + '" class="card media list-group-item p-4 post"><img class="media-object d-flex align-self-start mr-3" src="' + post.author.img + '"><div class="media-body"><div class="media-body-text"><div class="media-heading"><small class="float-right text-muted">' + time_ago(post.date) + '</small><h6><a href="../profile/' + post.author.id + '">' + post.author.name + '</a>';
-  if (!(post.author.id === post.user.id)) {
-    html +='<span class="icon icon-triangle-right"></span><a href="../profile/' + post.user.id + '">' + post.user.name + '</a>';
-  };
   html += '</h6></div><p>' + post.content + '</p></div><div class="d-flex postData"><div class="mr-auto pt-1"><a class="likes" href="#userModal" data-toggle="modal"><span class="icon icon-heart"></span><span class="likeCount">0</span> Likes</a><span>&nbsp</span><a class="comments" href=#><span class="icon icon-message"></span><span class="commentCount">0</span> Comments</a></div><div><button class="btn btn-sm btn-outline-secondary like"><span class="icon icon-heart" style="color: #3097D1"></span></button><button class="btn btn-sm btn-outline-secondary share"><span class="icon icon-retweet" style="color: #3097D1"></span></button></div></div><ul class="media-list comment-list hidden"><li class="media mb-3"><img class="media-object d-flex align-self-start mr-3" src="'+ post.author.img +'"><div class="media-body"><form class="com-form"><input class="com-in mt-2" type="text" placeholder="Write a comment..."></form></div></li></ul></div></li>';
   return html;
 }
@@ -116,16 +113,34 @@ $newPost.submit(function(event) {
     $(formatPost(post)).prependTo($posts).hide().slideDown();
     $postInput.val('');
     io.emit('post', {post: post})
-    if (!(post.user.id === post.author.id)) {
-      io.emit('multipleUserPost', {post: post})
-    }
   })
   event.preventDefault();
 })
 
 //-------------socket---------------------
 io.on('post', function(postData) {
-  $(formatPost(postData.post)).prependTo($posts).hide().slideDown();
+  if ((profileId !== userId && postData.post.author.id === profileId) || profileId === userId) {
+    $(formatPost(postData.post)).prependTo($posts).hide().slideDown();
+  } else {
+    return false
+  }
+})
+
+io.on('newComment', function(commentData) {
+  var comment = commentData.comment;
+  var postId = '#' + comment.post;
+  var post = $(postId);
+  if (post.find('.comments').hasClass('populated')) {
+    post.find(".comment-list li:last-child").before(formatComment(comment))
+  }
+  post.find(".commentCount").html(Number(post.find(".commentCount").html()) + 1)
+})
+
+io.on('newLike', function(postData) {
+  var post = postData.post;
+  var postId = '#' + post._id;
+  var post = $(postId);
+  post.find('.likeCount').html(Number(post.find('.likeCount').html()) + 1)
 })
 
 
@@ -217,7 +232,8 @@ $(document).on("submit", ".com-form", function(event) {
         $this.val('')
         var commentCount = $this.parents(".media-body").children(".postData").children(".pt-1").children(".comments").children(".commentCount");
         commentCount.html(Number(commentCount.html()) + 1);
-        io.emit('comment', {userId: userId, postId: postId})
+        console.log(comment)
+        io.emit('comment', {comment: comment})
       })
   }
   event.preventDefault()

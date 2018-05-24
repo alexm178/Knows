@@ -22,17 +22,12 @@ io.on('connect', function(socket){
  });
  socket.on('like', function(data) {
    setTimeout(function(date) {
-     ioModule.likeOrComment(data, socket)
+     ioModule.like(data, socket)
    }, 2000);
  });
  socket.on('comment', function(data) {
    setTimeout(function(date) {
-     ioModule.likeOrComment(data, socket)
-   }, 2000);
- })
- socket.on('multipleUserPost', function(data) {
-   setTimeout(function(date) {
-     ioModule.post(data, socket)
+     ioModule.comment(data, socket)
    }, 2000);
  })
  socket.on('post', function(data) {

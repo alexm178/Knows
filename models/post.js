@@ -11,17 +11,25 @@ var postSchema = new mongoose.Schema({
       name: 'String',
       img: 'String'
     },
-  user: {
+  tags: [
+    {
       id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
       },
       name: 'String'
-  },
+  }
+],
   comments: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Comment'
+    }
+  ],
+  subs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     }
   ],
   likes: [

@@ -491,10 +491,6 @@
                   <small class="float-right text-muted"><span class="timeStamp"><%= post.date %></span></small>
                   <h6>
                     <a href='../profile/<%= post.author.id %>'><%= post.author.name %></a>
-                    <% if (!post.author.id.equals(post.user.id)) { %>
-                      <span class="icon icon-triangle-right"></span>
-                      <a href='../profile/<%= post.user.id %>'><%= post.user.name %></a>
-                    <% } %>
                   </h6>
                 </div>
                 <p>
@@ -526,7 +522,7 @@
                   <div
                     class="media-object d-flex align-self-start mr-3" style="background-image: url(<%= user.img %>); height: 40px; background-size: cover; background-position: center; display: inline-block">
                   </div>
-                  <div class="media-body">
+                  <div class="media-body ">
                     <form class="com-form" method="post">
                       <input class="com-in mt-2" type="text" placeholder="Write a comment...">
                     </form>

@@ -49,7 +49,7 @@ var userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'
       },
-      multipleUsers: Boolean
+      possessive: String
     }
   ],
   socket: String

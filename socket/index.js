@@ -19,30 +19,49 @@ ioFunctions.id = function(data, socket) {
   });
 }
 
-ioFunctions.likeOrComment = function(data, socket) {
+ioFunctions.like = function(data, socket) {
   Post.findById(data.postId, (err, post) => {
-    User.findById(post.user.id, (err, user) => {
-      if (user.socket) {
-        socket.to(user.socket).emit('notification', {notification: user.notifications[user.notifications.length - 1], role: 'user'})
-      }
-    })
-    if (!(post.user.id.equals(post.author.id))) {
-      User.findById(post.author.id, (err, author) => {
-        if (author.socket) {
-          socket.to(author.socket).emit('notification', {notification: author.notifications[author.notifications.length - 1], role: 'author'})
-        }
+    User.findById(post.author.id, (err, postAuthor) => {
+      if (postAuthor.socket) {
+        socket.to(postAuthor.socket).emit('notification', {notification: postAuthor.notifications[postAuthor.notifications.length - 1]})
+        socket.to(postAuthor.socket).emit('newLike', {post: post})
+      };
+      postAuthor.followers.forEach((follower) => {
+        User.findById(follower.id, (err, foundFollower) => {
+          if (foundFollower.socket) {
+            socket.to(foundFollower.socket).emit('newLike', {post: post})
+          }
+        })
       })
-    }
+    })
   })
 }
 
-ioFunctions.multipleUserPost = function(data, socket) {
-  User.findById(data.post.user.id, (err, user) => {
-    if (user.socket) {
-      socket.to(user.socket).emit('notification', {notification: user.notifications[user.notifications.length - 1], role: 'post'})
-    }
-  })
+ioFunctions.comment = function(data, socket) {
+  Post.findById(data.comment.post).populate('author.id').populate('subs').exec()
+    .then(
+      (post) => {
+        if (post.author.id.socket) {
+          socket.to(post.author.id.socket).emit('notification', {notification: post.author.id.notifications[post.author.id.notifications.length - 1]})
+          socket.to(post.author.id.socket).emit('newComment', {comment: data.comment})
+        };
+        post.subs.forEach((sub) => {
+          socket.to(sub.socket).emit('notification', {notification: sub.notifications[sub.notifications.length - 1]})
+        });
+        post.author.id.followers.forEach((follower) => {
+          User.findById(follower.id, (err, foundFollower) => {
+            if (foundFollower.socket) {
+              socket.to(foundFollower.socket).emit('newComment', {comment: data.comment})
+            }
+          })
+        })
+      }
+    )
+    .catch(
+      (err) => console.log(err)
+    )
 }
+
 
 ioFunctions.post = function(data, socket) {
   User.findById(data.post.author.id).populate('followers').exec((err, author) => {

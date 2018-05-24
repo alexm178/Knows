@@ -5,7 +5,6 @@ var Post = require('../models/post.js');
 
 
 router.get('/', isLoggedIn, (req, res) => {
-  console.log('/')
   res.redirect('/dash/' + req.user._id)
 })
 
@@ -25,7 +24,9 @@ router.get('/dash/:id', isLoggedIn, (req, res) => {
           })
         })
       } else {
-        res.render('dash', {user: user, posts: posts})
+        res.render('dash', {user: user, posts: posts.sort((a, b) => {
+          return b.date - a.date
+        })})
       }
     })
 })
