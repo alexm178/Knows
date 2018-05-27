@@ -358,3 +358,33 @@ $('#newFollow').on('click', function(event) {
     $this.remove()
   })
 })
+
+
+//==========USER MANAGEMENT=================
+$('#av-in').change(() => {
+  $('#userModal').find('.modal-title').html('Choose Profile Picture')
+  $('#modal').click()
+  $('#userModal').find('.modal-body').html('<div class="spinner"><div class="dot1"></div><div class="dot2"></div></div>')
+
+  if ( ! window.FileReader ) {
+			return alert( 'FileReader API is not supported by your browser.' );
+		}
+		var $i = $( '#av-in' ), 
+			input = $i[0];
+		if ( input.files && input.files[0] ) {
+			file = input.files[0];
+			fr = new FileReader();
+			fr.onload = function (event) {
+        $('#userModal').find('.modal-body').html("<img class='av-selected mt-2' src='"+ event.target.result + "'><div class='mb-2 av-btns'><button id='av-post' class='btn btn-primary mr-2'>Post</button><button class='btn btn-secondary'>Cancel</button>")
+			};
+			fr.readAsDataURL( file );
+		} else {
+			alert( "File not selected or browser incompatible." )
+		}
+    var formData = new FormData()
+})
+
+$(document).on('click', '#av-post', function(event) {
+  $('#av-form').submit()
+  $('#userModal').find('.modal-body').html('<div class="spinner"><div class="dot1"></div><div class="dot2"></div></div>')
+})

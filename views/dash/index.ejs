@@ -39,7 +39,7 @@
 <body class="with-top-navbar">
   <div id="<%= user._id %>" class='profileId' style='display: none'></div>
   <div id="<%= user._id %>" class='userId' style='display: none'></div>
-
+  <a id="modal" href="#userModal" class="text-inherit" data-toggle="modal" style='display: none'>
 
 <div class="growl" id="app-growl"></div>
 
@@ -392,10 +392,16 @@
       <div class="card card-profile mb-4">
         <div class="card-header" style="background-image: url(../assets/img/iceland.jpg);"></div>
         <div class="card-block text-center">
-          <a href="../profile/<%= user.id %>">
+          <div style='position: relative'>
+            <a href="../profile/<%= user.id %>">
               <div class="card-profile-img" style="background-image: url(<%= user.img %>); height: 100px; width: 100px; background-size: cover; background-position: center; display: inline-block">
               </div>
-          </a>
+            </a>
+            <form id='av-form' method='post' enctype="multipart/form-data" action='/user/avatar/<%= user._id %>'>
+              <label for='av-in'><div class='btn btn-sm btn-secondary av-btn'><span class='icon icon-camera'></span></div></label>
+              <input type='file' name='avatar' id='av-in'>
+            </form>
+          </div>
 
           <h6 class="card-title">
             <a class="text-inherit" href="../profile/<%= user.id %>"><%= user.firstName + ' ' + user.lastName %></a>

@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user.js');
 var Post = require('../models/post.js');
+var Album = require('../models/album.js')
 
 
 router.get("/user/:info/:id?", (req, res) => {
@@ -48,6 +49,8 @@ router.post("/user/:action/:id", isLoggedIn, (req, res) => {
     case "addFollowing":
       addFollowing(req, res);
       break;
+    case "avatar":
+      updateAvatar(req, res);
   }
 })
 
@@ -80,6 +83,84 @@ function addFollowing(req, res) {
     }
   })
 }
+
+function updateAvatar(req, res) {
+  saveImage(req, res)
+}
+
+var multer = require('multer');
+var path = require('path');
+var fs = require('fs')
+
+var AWS = require('aws-sdk');
+var s3 = new AWS.S3();
+
+
+const storage = multer.diskStorage({
+  destination: './public/temp/',
+  filename: function(req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+  }
+})
+
+const upload = multer({
+  storage: storage,
+}).single('avatar')
+
+
+
+function saveImage(req, res) {
+  upload(req, res, (err) => {
+    if (err) {
+      console.log(err)
+    } else {
+      fs.readFile(req.file.path, function (err, data) {
+        if (err) {
+          throw err;
+          return res.end('Error')
+        }
+        var fileName = req.file.fieldname + '-' + Date.now() + path.extname(req.file.originalname)
+        var params = {Bucket: 'knows', Key: fileName, Body: data, ACL: 'public-read'};
+        s3.putObject(params, function(err, data) {
+          if (err) {
+            console.log(err)
+          } else {
+            var imgUrl = 'https://s3.us-east-2.amazonaws.com/knows/' + fileName
+            User.findByIdAndUpdate(req.user._id, { $set: { img: imgUrl }})
+            .then(
+              user => {
+                res.redirect('/dash/' + req.user._id)
+                fs.unlink(req.file.path, function(err) {
+                  if (err) {
+                    console.log(err)
+                  }
+                })
+                user.albums.forEach((albumId) => {
+                  Album.findById(albumId, (err, album) => {
+                    if (err) {
+                      console.log(err)
+                    } else if (album.name === 'Profile Pictures') {
+                      album.photos.push(imgUrl);
+                      album.save()
+                    }
+                  })
+                })
+              }
+            )
+            .catch(
+              err => {
+                throw (err)
+                res.end('error')
+              }
+            )
+          }
+        });
+      });
+     }
+  })
+}
+
+
 
 function isLoggedIn(req, res, next) {
   if(req.isAuthenticated()) {

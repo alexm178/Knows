@@ -52,7 +52,13 @@ var userSchema = new mongoose.Schema({
       possessive: String
     }
   ],
-  socket: String
+  socket: String,
+  albums: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Album'
+    }
+  ]
 });
 
 userSchema.plugin(passportLocalMongoose);

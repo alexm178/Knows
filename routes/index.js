@@ -3,6 +3,12 @@ var router = express.Router();
 var User = require('../models/user.js');
 var Post = require('../models/post.js');
 var passport = require('passport');
+var Album = require('../models/album.js')
+
+
+
+
+
 
 router.get('/login', (req, res) => {
   res.render('login')
@@ -30,20 +36,32 @@ router.get('/signup', (req, res) => {
 })
 
 router.post('/signup', (req, res) => {
-  User.register(new User({firstName: req.body.firstName, lastName: req.body.lastName, username: req.body.email, email: req.body.email, img: req.body.img}), req.body.password, (err, user) => {
-    if(err) {
-      console.log(err);
-      return res.render('login/signup');
-    } else {
-      req.login(user, function(err){
-        if(err) {
-          console.log(err)
-        } else {
-            return res.redirect('/dash/' + req.user._id)
-        }
-      });
-    }
-  })
+  User.register(new User({firstName: req.body.firstName, lastName: req.body.lastName, username: req.body.email, email: req.body.email, img: '../../assets/img/avatar.png'}), req.body.password)
+    .then(
+      user => {
+        req.login(user, (err) => {
+          if (err) {
+            console.log(err)
+          } else {
+            res.redirect('/dash/' + user._id)
+            Album.create({name: 'Profile Pictures', owner: user._id}, (err, album) => {
+              if (err) {
+                console.log(err)
+              } else {
+                user.albums.push(album._id)
+                user.save()
+              }
+            })
+          }
+        })
+      }
+    )
+    .catch(
+      err => {
+        console.log(err);
+        return res.render('signup');
+      }
+    )
 })
 
 function isLoggedIn(req, res, next) {

@@ -3965,6 +3965,16 @@ button.close {
   width: auto;
   margin: 10px; }
 
+.av-selected {
+    width: 85vw;
+    margin-left: 5vw
+}
+
+.av-btns {
+  float: right;
+  margin-right: 5vw
+}
+
 .modal-content {
   position: relative;
   display: -webkit-box;
@@ -4046,7 +4056,14 @@ button.close {
     max-width: 500px;
     margin: 30px auto; }
   .modal-sm {
-    max-width: 300px; } }
+    max-width: 300px; }
+  .av-selected {
+    max-width: 450px;
+    margin: 10px 25px}
+  .av-btns {
+    float: right;
+    margin-right: 25px
+    }}
 
 @media (min-width: 992px) {
   .modal-lg {

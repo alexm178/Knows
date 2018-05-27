@@ -12,6 +12,7 @@ var MongoStore = require('connect-mongo')(session);
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+
 var ioModule = require('./socket')
 
 io.on('connect', function(socket){
@@ -94,6 +95,8 @@ app.use(indexRouter);
 app.use(profileRouter);
 app.use(userRouter);
 app.use(postRouter);
+
+
 
 
 http.listen(3000, function() {
