@@ -94,7 +94,7 @@ var $posts = $('#posts');
 
 function formatPost(post) {
   var html = '<li id="' + post._id + '" class="card media list-group-item p-4 post"><img class="media-object d-flex align-self-start mr-3" src="' + post.author.img + '"><div class="media-body"><div class="media-body-text"><div class="media-heading"><small class="float-right text-muted">' + time_ago(post.date) + '</small><h6><a href="../profile/' + post.author.id + '">' + post.author.name + '</a>';
-  html += '</h6></div><p>' + post.content + '</p></div><div class="d-flex postData"><div class="mr-auto pt-1"><a class="likes" href="#userModal" data-toggle="modal"><span class="icon icon-heart"></span><span class="likeCount">0</span> Likes</a><span>&nbsp</span><a class="comments" href=#><span class="icon icon-message"></span><span class="commentCount">0</span> Comments</a></div><div><button class="btn btn-sm btn-outline-secondary like"><span class="icon icon-heart" style="color: #3097D1"></span></button><button class="btn btn-sm btn-outline-secondary share"><span class="icon icon-retweet" style="color: #3097D1"></span></button></div></div><ul class="media-list comment-list hidden"><li class="media mb-3"><img class="media-object d-flex align-self-start mr-3" src="'+ post.author.img +'"><div class="media-body"><form class="com-form"><input class="com-in mt-2" type="text" placeholder="Write a comment..."></form></div></li></ul></div></li>';
+  html += '</h6></div><p>' + post.content + '</p></div><div class="d-flex postData"><div class="mr-auto pt-1"><a class="likes" href="#userModal" data-toggle="modal"><span class="icon icon-heart"></span><span class="likeCount">' + post.likes.length + '</span> Likes</a><span>&nbsp</span><a class="comments" href=#><span class="icon icon-message"></span><span class="commentCount">' + post.comments.length + '</span> Comments</a></div><div><button class="btn btn-sm btn-outline-secondary like"><span class="icon icon-heart" style="color: #3097D1"></span></button><button class="btn btn-sm btn-outline-secondary share"><span class="icon icon-retweet" style="color: #3097D1"></span></button></div></div><ul class="media-list comment-list hidden"><li class="media mb-3"><img class="media-object d-flex align-self-start mr-3" src="'+ post.author.img +'"><div class="media-body"><form class="com-form"><input class="com-in mt-2" type="text" placeholder="Write comment..."></form></div></li></ul></div></li>';
   return html;
 }
 
@@ -148,7 +148,16 @@ io.on('newLike', function(postData) {
 
 //------VARIABLES------------
 var $collection = $('.collection');
+var albums;
 
+//------FUNCTIONS-------------------
+function formatAlbums (albums) {
+  var html = "<h1>Albums</h1><div class='row'>";
+  albums.forEach((album) => {
+    html += "<div class='col-md-3 col-sm-6' style='text-align: center'><a class='album' href='../profile/" + profileId + "/album/" + album._id + "'><img class='img-thumbnail' src='" + album.photos[album.photos.length - 1] + "'><h4>" + album.name + "</h4></a></div>"
+  })
+  $('.col-md-9').html(html)
+}
 
 //------AJAX------------------
 
@@ -162,9 +171,17 @@ $collection.on('click', function(event) {
     dataType: 'json'
   })
   .done((response) => {
-    if (response.html) {
-      $posts.html(response.html)
+    if (response.albums) {
+      albums = response.albums.reverse()
+      formatAlbums(albums)
     } else {
+      if (userId === profileId) {
+        var html = "<div><ul class='list-group media-list media-list-stream mb-4'><li id='postCard' class='card media list-group-item p-4'><form id='newPost' method='post'><textarea id='postInput' method='post' form='newPost' type='text' name='postInput' placeholder='What are you working on?'></textarea><div id='postButtons'><button class='btn btn-md btn-secondary'><span class='icon icon-camera'></span></button><button class='btn btn-md btn-primary'><span class='icon icon-paper-plane'></span></button></div></form></li><div id='posts'></div></ul></div>"
+        $(".col-md-9").html(html)
+      } else {
+        $(".col-md-9").html("<div><ul class='list-group media-list media-list-stream mb-4'><div id='posts'></div></ul></div>")
+      }
+      $posts = $('#posts')
       $posts.html('');
       response.posts.forEach((post) => {
         $posts.prepend(formatPost(post));
@@ -177,6 +194,30 @@ $collection.on('click', function(event) {
   })
   event.preventDefault();
 })
+
+$(document).on('click', '.album', function(event) {
+  $('.col-md-9').html('<div class="spinner"><div class="dot1"></div><div class="dot2"></div></div>')
+  $.ajax({
+    url: $(this).attr('href'),
+    data: {},
+    type: 'GET',
+    dataType: 'json'
+  })
+  .done((response) => {
+    var html = "<button class='btn btn-secondary al-nav'><span class='icon icon-chevron-thin-left'></span>Albums</button><h1>" + response.album.name + "</h1><div class='row'>";
+    response.album.photos.reverse().forEach((photo) => {
+      html += "<div class='col-md-3 col-sm-6' style='text-align: center'><a class='photo' data-lightbox='" + response.album.name + "' href='" + photo + "'><img class='img-thumbnail' src='" + photo + "'></a></div>"
+    })
+    $('.col-md-9').html(html)
+  })
+  event.preventDefault()
+})
+
+$(document).on('click', '.al-nav', function(event) {
+  formatAlbums(albums)
+})
+
+
 
 //=============!!!!!! LIKE/COMMENT/SHARE !!!!!!!!!!!=====================
 
@@ -232,7 +273,6 @@ $(document).on("submit", ".com-form", function(event) {
         $this.val('')
         var commentCount = $this.parents(".media-body").children(".postData").children(".pt-1").children(".comments").children(".commentCount");
         commentCount.html(Number(commentCount.html()) + 1);
-        console.log(comment)
         io.emit('comment', {comment: comment})
       })
   }
@@ -369,22 +409,25 @@ $('#av-in').change(() => {
   if ( ! window.FileReader ) {
 			return alert( 'FileReader API is not supported by your browser.' );
 		}
-		var $i = $( '#av-in' ), 
+		var $i = $( '#av-in' ),
 			input = $i[0];
 		if ( input.files && input.files[0] ) {
 			file = input.files[0];
 			fr = new FileReader();
 			fr.onload = function (event) {
-        $('#userModal').find('.modal-body').html("<img class='av-selected mt-2' src='"+ event.target.result + "'><div class='mb-2 av-btns'><button id='av-post' class='btn btn-primary mr-2'>Post</button><button class='btn btn-secondary'>Cancel</button>")
+        $('#userModal').find('.modal-body').html("<img class='av-selected mt-2' src='"+ event.target.result + "'><div class='mb-2 av-btns'><button class='btn btn-secondary mr-2' id='av-cancel'>Cancel</button><button id='av-post' class='btn btn-primary'>Post</button>")
 			};
 			fr.readAsDataURL( file );
 		} else {
 			alert( "File not selected or browser incompatible." )
 		}
-    var formData = new FormData()
 })
 
 $(document).on('click', '#av-post', function(event) {
   $('#av-form').submit()
   $('#userModal').find('.modal-body').html('<div class="spinner"><div class="dot1"></div><div class="dot2"></div></div>')
+})
+
+$(document).on('click', '#av-cancel', function(event) {
+  $('#userModal').find('.close').click()
 })

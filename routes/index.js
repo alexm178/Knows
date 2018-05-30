@@ -6,10 +6,6 @@ var passport = require('passport');
 var Album = require('../models/album.js')
 
 
-
-
-
-
 router.get('/login', (req, res) => {
   res.render('login')
 })

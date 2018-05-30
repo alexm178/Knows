@@ -22,6 +22,7 @@
 
     <link href="../assets/css/application.css" rel="stylesheet">
     <link href='../assets/css/profile.css' rel='stylesheet'>
+    <link href="../assets/lightbox2/dist/css/lightbox.css" rel="stylesheet">
 
     <style>
       /* note: this is a hack for ios iframe for bootstrap themes shopify page */
@@ -436,7 +437,6 @@
                 </div>
                   <ul class="media-list comment-list hidden">
                    <li class="media mb-3">
-
                     <div
                       class="media-object d-flex align-self-start mr-3" style="background-image: url(<%= user.img %>); height: 40px; background-size: cover; background-position: center; display: inline-block">
                     </div>
@@ -448,10 +448,7 @@
                   </li>
                 </ul>
               </div>
-
-
             </li>
-
             <% }) %>
           </div>
         </ul>
@@ -469,6 +466,7 @@
     <script src="../assets/js/toolkit.js"></script>
     <script src="../assets/js/application.js"></script>
     <script src="../assets/js/profile.js"></script>
+    <script src="../assets/lightbox2/dist/js/lightbox.js"></script>
     <script>
       // execute/clear BS loaders for docs
       $(function(){

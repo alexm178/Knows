@@ -2,9 +2,10 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user.js');
 var Post = require('../models/post.js');
+var Album = require('../models/album.js')
 
 
-router.get('/profile/:id/:collection?', (req, res) => {
+router.get('/profile/:id/:collection?/:albumId?', (req, res) => {
   switch (req.params.collection) {
     case undefined:
       getProfile(req, res);
@@ -16,6 +17,9 @@ router.get('/profile/:id/:collection?', (req, res) => {
       getProjects(req, res);
       break;
     case 'Photos':
+      getAlbums(req, res);
+      break;
+    case 'album':
       getPhotos(req, res);
       break;
   }
@@ -55,8 +59,26 @@ function getProjects(req, res) {
   res.json({html: '<h1>Projects Here</h1>'})
 }
 
+function getAlbums(req, res) {
+  User.findById(req.user._id).populate('albums')
+  .then(
+    user => {
+      var userAlbums = [];
+      user.albums.forEach((album) => {
+        userAlbums.push(album);
+      });
+      res.json({albums: userAlbums})
+    }
+  )
+  .catch(
+    err => {console.log(err)}
+  )
+}
+
 function getPhotos(req, res) {
-  res.json({html: '<h1>Photos Here</h1>'})
+  Album.findById(req.params.albumId, (err, album) => {
+    res.json({album: album})
+  })
 }
 
 router.post('/profile/:id/:action', isLoggedIn, (req, res) => {
