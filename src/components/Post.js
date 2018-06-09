@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import AnimateHeight from 'react-animate-height'
+import AnimateHeight from 'react-animate-height';
+import PostAction from './PostAction'
 
 
 
@@ -7,7 +8,8 @@ class Post extends Component {
   constructor(props){
     super(props);
     this.state = {
-      height: 0
+      height: 0,
+      timeago: null
     }
   }
 
@@ -53,7 +55,14 @@ class Post extends Component {
     return time;
   }
 
+  componentWillMount() {
+    this.setState({timeago: this.formatDate(this.props.post.date)})
+  }
+
   componentDidMount() {
+    this.timerId = setInterval(function() {
+      this.setState({timeago: this.formatDate(this.props.post.date)})
+    }.bind(this), 60000)
     if (this.props.post.new) {
       this.setState({height: 'auto'}, () => {
         var newPost = this.props.post;
@@ -65,6 +74,10 @@ class Post extends Component {
         }.bind(this), 500)
       })
     }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerId)
   }
 
   render() {
@@ -82,7 +95,7 @@ class Post extends Component {
               <div className="media-body">
                 <div className="media-body-text">
                   <div className="media-heading">
-                    <small className="float-right text-muted"><span className="timeStamp">{this.formatDate(this.props.post.date)}</span></small>
+                    <small className="float-right text-muted"><span className="timeStamp">{this.state.timeago}</span></small>
                     <h6>
                       <a href='../profile/<%%>'>{this.props.post.author.name}</a>
                     </h6>
@@ -92,6 +105,9 @@ class Post extends Component {
                   </p>
                 </div>
               </div>
+
+              <PostAction post={this.props.post} user={this.props.user} />
+
             </li>
 
         </AnimateHeight>
@@ -103,17 +119,21 @@ class Post extends Component {
                 className="media-object d-flex align-self-start mr-3"
                 style={{backgroundImage: "url('" + this.props.post.author.img + "')", backgroundSize: "cover", backgroundPosition: "center"}}>
             </div>
-            <div className="media-body">              <div className="media-body-text">
-              <div className="media-heading">
-                <small className="float-right text-muted"><span className="timeStamp">{this.formatDate(this.props.post.date)}</span></small>
-                <h6>
-                  <a href='../profile/<%%>'>{this.props.post.author.name}</a>
-                </h6>
-              </div>
+            <div className="media-body">
+              <div className="media-body-text">
+                <div className="media-heading">
+                  <small className="float-right text-muted"><span className="timeStamp">{this.formatDate(this.state.timeago)}</span></small>
+                  <h6>
+                    <a href='../profile/<%%>'>{this.props.post.author.name}</a>
+                  </h6>
+                </div>
               <p>
                 {this.props.post.content}
               </p>
             </div>
+
+          <PostAction post={this.props.post} user={this.props.user} />
+
           </div>
         </li>
       );

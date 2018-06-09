@@ -76,12 +76,15 @@ class AvatarForm extends Component {
           <label htmlFor='av-in'><div className='btn btn-sm btn-secondary av-btn'><span className='icon icon-camera'></span></div></label>
           <input type='file' name='avatar' id='av-in' onChange={this.handleChange.bind(this)}/>
         </form>
-        <Modal
-          display={this.state.displayModal}
-          close={this.closeModal.bind(this)}
-          title='Choose Profile Picture:'
-          body={<div><img className='av-selected mt-2' src={this.state.result}/><div className='mb-2 av-btns'><button className='btn btn-secondary mr-2' id='av-cancel'>Cancel</button><button id='av-post' className='btn btn-primary' onClick={this.handleSubmit.bind(this)}>Post</button></div></div>}
-        />
+
+        {this.state.displayModal &&
+          <Modal
+            close={this.closeModal.bind(this)}
+            title='Choose Profile Picture:'
+            body={<div><img className='av-selected mt-2' src={this.state.result}/><div className='mb-2 av-btns'><button className='btn btn-secondary mr-2' id='av-cancel'>Cancel</button><button id='av-post' className='btn btn-primary' onClick={this.handleSubmit.bind(this)}>Post</button></div></div>}
+          />
+        }
+
       </div>
 
     );

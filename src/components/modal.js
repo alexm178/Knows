@@ -12,7 +12,6 @@ class Modal extends Component {
 
 
   render() {
-    if (this.props.display) {
       return(
         <div>
           <div className="modal fade show" id="userModal" tabIndex="-1" role="dialog" aria-labelledby="userModal" aria-hidden="false" style={{display: 'block'}}>
@@ -24,9 +23,9 @@ class Modal extends Component {
                 </div>
 
                 <div className="modal-body p-0">
-                  {this.props.body}
-                  <div className="modal-body-scroller">
 
+                  <div className="modal-body-scroller">
+                    {this.props.body}
                   </div>
                 </div>
               </div>
@@ -35,11 +34,6 @@ class Modal extends Component {
           <div className="modal-backdrop fade show"></div>
         </div>
       )
-    } else {
-      return (
-        <div></div>
-      )
-    }
   }
 }
 

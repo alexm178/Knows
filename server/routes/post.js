@@ -17,6 +17,17 @@ router.post('/', (req, res) => {
   })
 })
 
-
+router.put('/like', (req, res) => {
+  Post.findById(req.query.id, (err, post) => {
+    if (err) {
+      console.log(err);
+      res.json({err: err})
+    } else {
+      post.likes.push(req.body);
+      post.save()
+      res.json('success')
+    }
+  })
+})
 
 module.exports = router

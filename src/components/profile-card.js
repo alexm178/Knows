@@ -3,10 +3,6 @@ import AvatarForm from './avatar-form'
 
 
 class ProfileCard extends Component {
-  constructor(props){
-    super(props);
-  }
-
 
 
   render() {
