@@ -64,9 +64,12 @@ passport.deserializeUser(User.deserializeUser());
 // routes
 const index = require('./routes/index')
 const user = require('./routes/user')
+const post = require('./routes/post')
 
 app.use('/', index)
 app.use('/user', user)
+app.use('/post', post)
+
 
 // Starting Server
 app.listen(PORT, () => {

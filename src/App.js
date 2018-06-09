@@ -5,6 +5,7 @@ import axios from 'axios'
 import Signup from './components/signup';
 import Login from './components/login';
 import Dash from './components/dash';
+import Modal from './components/modal'
 import {Route, Link, Redirect, Switch} from 'react-router-dom'
 import entypo from 'entypo'
 import {RingLoader} from 'react-spinners'

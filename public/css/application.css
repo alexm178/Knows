@@ -134,6 +134,14 @@ display: none !important;
   right: 60px;
 }
 
+.card-profile-img{
+    height: 100px;
+    width: 100px;
+    background-size: cover;
+    background-position: center;
+    display: inline-block
+}
+
 
 /*===========================*/
 #av-in {
