@@ -26,7 +26,7 @@ class App extends Component {
   componentWillMount() {
     axios.get('/auth').then(
       response => {
-          this.updateUser(response.data)
+        this.updateUser(response.data)
       }
     ).catch(err => console.log(err))
   }

@@ -27,9 +27,7 @@ class PostForm extends Component {
     }).then(response => {
       var newPost = response.data.post;
       newPost.new = true;
-      var newUser = this.props.user;
-      newUser.posts.push(newPost);
-      this.props.updateUser({user: newUser})
+      this.props.newPost(newPost)
       this.setState({content: ''})
     }).catch(err => {
       console.log(err)

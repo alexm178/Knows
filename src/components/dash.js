@@ -10,15 +10,7 @@ import PostSection from './PostSection'
 class Dash extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-    }
-  }
-
-
-
-
-  componentWillMount() {
-
+    this.state = {}
   }
 
   render() {
@@ -28,11 +20,11 @@ class Dash extends Component {
         <Navbar user={this.props.user} updateUser={this.props.updateUser}/>
         <div className="container pt-4">
           <div className="row">
-            <div className="col-lg-3">
+            <div className="col-md-3">
               < ProfileCard user={this.props.user} updateUser={this.props.updateUser.bind(this)} />
             </div>
-            <div className="col-lg-6">
-                < PostSection user={this.props.user} updateUser={this.props.updateUser.bind(this)}/>
+            <div className="col-md-6">
+              < PostSection user={this.props.user} profile={false}/>
             </div>
           </div>
         </div>

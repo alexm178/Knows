@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios'
 import Modal from './modal'
+import CommentForm from './CommentForm'
+
 
 
 class PostAction extends Component {
@@ -9,7 +11,8 @@ class PostAction extends Component {
     this.state = {
       displayModal: false,
       likes: [],
-      liked: null
+      liked: null,
+      new: false
     }
   }
 
@@ -61,12 +64,25 @@ class PostAction extends Component {
     )
   }
 
+  displayComments() {
+    axios.get('/post/comments/' + this.props.post._id).then(
+      response => {
+        this.props.populateComments(response.data.comments);
+      }
+    ).catch(
+      err => {
+        console.log(err);
+        alert('Something went wrong :(')
+      }
+    )
+  }
+
   closeModal() {
     this.setState({displayModal: false})
   }
 
   componentWillMount() {
-    this.setState({likes: this.props.post.likes}, () => {
+    this.setState({likes: this.props.post.likes, new: this.props.post.new}, () => {
       var liked = false;
       this.props.post.likes.forEach((like) => {
         if (like.id === this.props.user._id) {
@@ -78,29 +94,29 @@ class PostAction extends Component {
   }
 
   render() {
-    return(
-      <div className='d-flex postAction'>
-        <div className="mr-auto pt-1">
-          <a onClick={this.displayLikes.bind(this)} className="likes mr-2"><span className="icon icon-heart"></span><span className="likeCount">{' ' + this.state.likes.length}</span></a>
-          <a className="comments"><span className="icon icon-message"></span><span className="commentCount">{' ' + this.props.post.comments.length }</span></a>
-        </div>
-        <div>
+      return(
+        <div className='d-flex postAction mb-2'>
+          <div className="mr-auto pt-1">
+            <a onClick={this.displayLikes.bind(this)} className="likes mr-2"><span className="icon icon-heart"></span><span className="likeCount">{' ' + this.state.likes.length}</span></a>
+            <a onClick={this.displayComments.bind(this)} className="comments"><span className="icon icon-message"></span><span className="commentCount">{' ' + this.props.commentCount }</span></a>
+          </div>
+          <div>
 
-          {!this.state.liked &&
-            <button onClick={this.like.bind(this)} className='btn btn-sm btn-outline-secondary mr-2'><span className='icon icon-heart' style={{color: '#3097D1'}}></span></button>
+            {!this.state.liked &&
+              <button onClick={this.like.bind(this)} className='btn btn-sm btn-outline-secondary mr-2'><span className='icon icon-heart' style={{color: '#3097D1'}}></span></button>
+            }
+
+            <button className='btn btn-sm btn-outline-secondary'><span className='icon icon-retweet' style={{color: '#3097D1'}}></span></button>
+          </div>
+          {this.state.displayModal &&
+            <Modal
+              title='Likes:'
+              body={<ul className="media-list media-list-users list-group">{this.state.likes}</ul>}
+              close={this.closeModal.bind(this)}
+            />
           }
-
-          <button className='btn btn-sm btn-outline-secondary'><span className='icon icon-retweet' style={{color: '#3097D1'}}></span></button>
         </div>
-        {this.state.displayModal &&
-          <Modal
-            title='Likes:'
-            body={<ul className="media-list media-list-users list-group">{this.state.likes}</ul>}
-            close={this.closeModal.bind(this)}
-          />
-        }
-      </div>
-    );
+      );
   }
 }
 

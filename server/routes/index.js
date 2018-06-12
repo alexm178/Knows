@@ -14,16 +14,7 @@ router.post('/logout', (req, res) => {
 
 router.get('/auth', (req, res) => {
   if (req.isAuthenticated()) {
-    User.findById(req.user._id).populate('posts').exec().then(
-      user => {
-        res.json({authenticated: true, user: user})
-      }
-    ).catch(
-      err => {
-        console.log(err);
-        res.json({authenticated: false, user: null})
-      }
-    ) 
+    res.json({authenticated: true, user: req.user})
   } else {
     res.json({authenticated: false, user: null})
   }
