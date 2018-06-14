@@ -8466,6 +8466,7 @@ img.zoom-img {
 .profile-header .media-object {
   display: inline-block;
   width: 80px;
+  height: 80px;
   margin-right: 0; }
 
 .profile-header-bio {
@@ -8484,7 +8485,8 @@ img.zoom-img {
   .profile-header {
     height: 500px; }
   .profile-header .media-object {
-    width: 110px; } }
+    width: 110px;
+    height: 110px} }
 
 .profile-header-nav {
   position: absolute;

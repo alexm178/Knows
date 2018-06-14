@@ -54,7 +54,22 @@ class PostAction extends Component {
         this.setState({
           likes: likes,
           liked: true
-        })
+        });
+        this.props.emit('like', {
+          authorId: this.props.post.author.id,
+          notification: {
+            user: {
+  						name: this.props.user.firstName + ' ' + this.props.user.lastName,
+  						id: this.props.user._id
+  					},
+            action: 'liked',
+            possessive: 'your',
+  					target: {
+  						type: this.props.post.type,
+  						id: this.props.post._id
+  					}
+          }
+				})
       }
     ).catch(
       err => {

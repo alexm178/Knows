@@ -18,7 +18,6 @@ class AvatarForm extends Component {
 
 
   handleReaderLoad(result) {
-    console.log(result)
     this.setState({
       result: result,
       displayModal: true
@@ -35,10 +34,15 @@ class AvatarForm extends Component {
 
     let reader = new FileReader();
     var file = event.target.files[0]
-    this.setState({file: file})
+    this.setState({
+      file: file,
+      displayModal: true
+    })
 
     reader.onloadend = (event) => {
-      this.handleReaderLoad(event.target.result)
+      this.setState({
+        result: event.target.result
+      })
     }
 
     reader.readAsDataURL(file)
@@ -51,14 +55,13 @@ class AvatarForm extends Component {
   handleSubmit(event){
     event.preventDefault();
     this.setState({
-      fileName: this.state.file.name + "-" + Date.now()
+      displayModal: false
     }, () => {
-      axios.post('/user/avatar', {fileName: this.state.file.name, fileType: this.state.file.type}).then(response => {
+      axios.post('/user/avatar', {fileName: this.state.file.name + "-" + Date.now(), fileType: this.state.file.type}).then(response => {
         axios.put(response.data.signedUrl, this.state.file).then(result => {
           var newUser = this.props.user;
           newUser.img = "https://s3.us-east-2.amazonaws.com/knows/" + this.state.file.name;
           this.props.updateUser({user: newUser});
-          this.setState({displayModal: false})
         }).catch(err => {
           console.log(err)
           alert('Upload failed :(')

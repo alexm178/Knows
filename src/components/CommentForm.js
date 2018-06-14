@@ -44,13 +44,13 @@ class CommentForm extends Component {
 
   render() {
     return(
-      <li className="media mb-3">
+      <li className="media comment-form p-1">
         <div
-          className="media-object d-flex align-self-start mr-3" style={{backgroundImage: 'url(' + this.props.user.img + ')', height: '40px', backgroundSize: 'cover', backgroundPosition: 'center', display: 'inline-block'}}>
+          className="media-object d-flex align-self-start mr-1" style={{backgroundImage: 'url(' + this.props.user.img + ')', height: '30px', width: '30px', backgroundSize: 'cover', backgroundPosition: 'center', display: 'inline-block'}}>
         </div>
         <div className="media-body">
           <form className="com-form" onSubmit={this.handleSubmit.bind(this)}>
-            <input className="com-in mt-2" value={this.state.content} onChange={this.handleChange.bind(this)} type="text" placeholder="Write a comment..." />
+            <input className="com-in pl-1" value={this.state.content} onChange={this.handleChange.bind(this)} type="text" placeholder="Write a comment..." />
           </form>
         </div>
       </li>

@@ -7,13 +7,14 @@ import TimeAgo from './TimeAgo'
 
 
 
+
 class Post extends Component {
   constructor(props){
     super(props);
     this.state = {
       height: 0,
       commentCount: null,
-      comments: []
+      comments: [],
     }
   }
 
@@ -60,7 +61,7 @@ class Post extends Component {
           height={ this.state.height }
         >
 
-        <li id={this.props.post.id} className="card media list-group-item p-4 post">
+        <li id={this.props.post.id} className="card media list-group-item p-4 pb-2 post">
           <div
             className="media-object d-flex align-self-start mr-3"
             style={{backgroundImage: "url('" + this.props.post.author.img + "')", backgroundSize: "cover", backgroundPosition: "center"}}>            </div>
@@ -78,14 +79,14 @@ class Post extends Component {
                 </div>
               </div>
 
-              <PostAction post={this.props.post} user={this.props.user} commentCount={this.state.commentCount} populateComments={this.populateComments.bind(this)}/>
+              <PostAction emit={this.props.emit.bind(this)} post={this.props.post} user={this.props.user} commentCount={this.state.commentCount} populateComments={this.populateComments.bind(this)}/>
 
               <ul className="media-list comment-list">
 
 
               <CommentList comments={this.state.comments} />
 
-              <CommentForm user={this.props.user} post={this.props.post} addComment={this.addComment.bind(this)}/>
+              <CommentForm emit={this.props.emit.bind(this)} user={this.props.user} post={this.props.post} addComment={this.addComment.bind(this)}/>
 
               </ul>
             </li>
@@ -94,17 +95,18 @@ class Post extends Component {
       )
     } else {
       return (
-        <li id={this.props.post.id} className="card media list-group-item p-4 post">
-            <div
+        <li id={this.props.post.id} className="card media list-group-item p-4 pb-2 post">
+
+            <a  href={'/profile/' + this.props.post.author.id}
                 className="media-object d-flex align-self-start mr-3"
                 style={{backgroundImage: "url('" + this.props.post.author.img + "')", backgroundSize: "cover", backgroundPosition: "center"}}>
-            </div>
+            </a>
             <div className="media-body">
               <div className="media-body-text">
                 <div className="media-heading">
                   <small className="float-right text-muted"><TimeAgo date={this.props.post.date}/></small>
                   <h6>
-                    <a href='../profile/<%%>'>{this.props.post.author.name}</a>
+                    <a href={'/profile/' + this.props.post.author.id}>{this.props.post.author.name}</a>
                   </h6>
                 </div>
               <p>
@@ -112,14 +114,14 @@ class Post extends Component {
               </p>
             </div>
 
-            <PostAction post={this.props.post} user={this.props.user} commentCount={this.state.commentCount} populateComments={this.populateComments.bind(this)}/>
+            <PostAction emit={this.props.emit.bind(this)} post={this.props.post} user={this.props.user} commentCount={this.state.commentCount} populateComments={this.populateComments.bind(this)}/>
 
             <ul className="media-list comment-list">
 
 
             <CommentList comments={this.state.comments} />
 
-            <CommentForm user={this.props.user} post={this.props.post} addComment={this.addComment.bind(this)}/>
+            <CommentForm emit={this.props.emit.bind(this)} user={this.props.user} post={this.props.post} addComment={this.addComment.bind(this)}/>
 
             </ul>
           </div>

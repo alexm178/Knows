@@ -12,7 +12,6 @@ class Navbar extends Component {
   }
 
   logOut(event) {
-    console.log(this.props.history)
     event.preventDefault();
     axios.post('/logout').then(response => {
       this.props.updateUser(response.data)
@@ -51,7 +50,7 @@ class Navbar extends Component {
                 <a className="nav-link" href="/dash">Home <span className="sr-only">(current)</span></a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="/profile">Profile</a>
+                <a className="nav-link" href={"/profile/" + this.props.user._id}>Profile</a>
               </li>
               <li className="nav-item">
                 <a className="nav-link" data-toggle="modal" href="#msgModal">Messages</a>
@@ -65,7 +64,7 @@ class Navbar extends Component {
                 <a className="nav-link" data-action="growl">Growl</a>
               </li>
               <li className="nav-item hidden-md-up">
-                <a className="nav-link" href="../logout">Logout</a>
+                <a onClick={this.logOut.bind(this)} className="nav-link">Logout</a>
               </li>
 
             </ul>
@@ -86,7 +85,7 @@ class Navbar extends Component {
                 </a>
               </li>
               <li className="nav-item ml-2">
-                <a className="btn btn-default navbar-btn navbar-btn-avatar" href='./profile'>
+                <a className="btn btn-default navbar-btn navbar-btn-avatar" href={'/profile/' + this.props.user._id}>
                   <img alt='avatar' className="rounded-circle" src={this.props.user.img} />
                 </a>
               </li>

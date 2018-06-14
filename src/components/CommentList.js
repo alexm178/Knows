@@ -12,14 +12,16 @@ class CommentList extends Component {
     var formattedComments = this.props.comments.map(comment => {
       return(
         <li className="media mb-3" key={comment._id}>
-        <img className="media-object d-flex align-self-start mr-3" src={comment.author.img} />
+        <a href={'/profile/' + comment.author.id}>
+          <img className="media-object d-flex align-self-start mr-3" src={comment.author.img} />
+        </a>
         <div className="media-body">
           <div className="media-body-text">
             <div className="media-heading">
               <small className="float-right text-muted">
                 <TimeAgo date={comment.date} />
               </small>
-              <h6><a href='#'><strong>{comment.author.name}</strong></a></h6>
+              <h6><a href={'/profile/' + comment.author.id}><strong>{comment.author.name}</strong></a></h6>
             </div>
             {comment.content}
           </div>

@@ -59,35 +59,57 @@ router.put('/like', (req, res) => {
   })
 })
 
-router.get('/dash', (req, res) => {
-  User.findById(req.user._id).populate('posts').exec().then(
-    user => {
-      var posts = [];
-      user.posts.forEach((post) => {
-        posts.push(post)
-      })
-      user.following.forEach((following) => {
-        User.findById(following).populate('posts').exec().then(
-          foundFollowing => {
-            foundFollowing.posts.forEach((post) => {
-              posts.push(post)
-            })
-          }
-        ).catch(
-          err => {
-            console.log(err)
-            res.json({err: err})
-          }
-        )
-      })
+router.get('/dash/:id?', (req, res) => {
+  if (req.params.id) {
+    Post.findById(req.params.id, (err, post) => {
+      if (err) {
+        console.log(err);
+        res.json({err: err})
+      } else {
+        res.json({posts: [post]})
+      }
+    })
+  } else {
+    User.findById(req.user._id).populate('posts').exec().then(
+      user => {
+        var posts = [];
+        user.posts.forEach((post) => {
+          posts.push(post)
+        })
+        user.following.forEach((following) => {
+          User.findById(following).populate('posts').exec().then(
+            foundFollowing => {
+              foundFollowing.posts.forEach((post) => {
+                posts.push(post)
+              })
+            }
+          ).catch(
+            err => {
+              console.log(err)
+              res.json({err: err})
+            }
+          )
+        })
+        res.json({posts: posts})
+      }
+    ).catch(
+      err => {
+        console.log(err)
+        res.json({err: err})
+      }
+    )
+  }
+})
+
+router.get('/profile/:id', (req, res) => {
+  Post.find({'author.id': req.params.id}, (err, posts) => {
+    if (err) {
+      console.log(err);
+      res.json({err: err})
+    } else {
       res.json({posts: posts})
     }
-  ).catch(
-    err => {
-      console.log(err)
-      res.json({err: err})
-    }
-  )
+  })
 })
 
 router.get('/comments/:id', (req, res) => {

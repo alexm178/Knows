@@ -1,33 +1,25 @@
 import React, { Component } from 'react';
 import Post from './Post'
 
-
 class PostSection extends Component {
   constructor(props){
     super(props);
     this.state = {
-      posts: []
+      posts: [],
     }
   }
 
-  componentWillMount() {
-    var sortedPostList = this.props.posts.sort((a, b) => {
-      return b.date - a.date;
-    })
-    var posts = sortedPostList.map((post) => {
-      return <Post key={post._id} post={post} user={this.props.user} updatePost={this.props.updatePost.bind(this)}/>
-    })
-    this.setState({posts: posts})
-  }
 
   componentWillReceiveProps(props) {
-    var sortedPostList = props.posts.sort((a, b) => {
-      return b.date - a.date;
-    })
-    var posts = sortedPostList.map((post) => {
-      return <Post key={post._id} post={post} user={props.user} updatePost={props.updatePost.bind(this)}/>
-    })
-    this.setState({posts: posts})
+    if (props.posts) {
+      var sortedPostList = props.posts.sort((a, b) => {
+        return b.date - a.date;
+      })
+      var posts = sortedPostList.map((post) => {
+        return <Post key={post._id} post={post} user={props.user} updatePost={props.updatePost.bind(this)} emit={this.props.emit.bind(this)}/>
+      })
+      this.setState({posts: posts})
+    }
   }
 
   render() {

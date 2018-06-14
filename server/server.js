@@ -9,6 +9,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const app = express()
 const PORT = 3001
 const User = require('./database/models/user')
+const Post = require('./database/models/post')
 
 
 
@@ -72,6 +73,34 @@ app.use('/post', post)
 
 
 // Starting Server
-app.listen(PORT, () => {
+const http = require('http').Server(app)
+http.listen(PORT, () => {
 	console.log(`App listening on PORT: ${PORT}`)
+})
+
+
+
+
+
+const io = require('socket.io')(http);
+
+io.on('connection', (socket) => {
+	console.log('connect')
+	socket.emit('id')
+	socket.on('id', (id) => {
+		User.findByIdAndUpdate(id, {$set: {socket: socket.id}}).exec()
+	});
+	socket.on('like', (data) => {
+		console.log('like')
+		User.findById(data.authorId, '-_id socket', (err, user) => {
+			if (err) {
+				console.log(err)
+			} else if (user.socket) {
+				socket.to(user.socket).emit('notification', data.notification)
+			}
+		})
+	})
+	socket.on('disconnent', () => {
+		User.findByIdAndUpdate(userId, {$set: {socket: null}}).exec()
+	})
 })

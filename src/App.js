@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
 import axios from 'axios'
 import Signup from './components/signup';
 import Login from './components/login';
 import Dash from './components/dash';
-import Modal from './components/modal'
+import Profile from './components/Profile'
 import {Route, Link, Redirect, Switch} from 'react-router-dom'
-import entypo from 'entypo'
-import {RingLoader} from 'react-spinners'
+import io from 'socket.io-client';
+
+
+
 
 class App extends Component {
   constructor(props) {
@@ -16,6 +16,8 @@ class App extends Component {
     this.state = {
       authenticated: false,
       user: 'loading',
+      socket: null,
+      notifications: []
     }
   }
 
@@ -26,9 +28,37 @@ class App extends Component {
   componentWillMount() {
     axios.get('/auth').then(
       response => {
-        this.updateUser(response.data)
+        this.setState(response.data, () => {
+          this.initializeSocket()
+        })
       }
     ).catch(err => console.log(err))
+  }
+
+
+  initializeSocket() {
+    if (this.state.authenticated) {
+      this.setState({socket: io()}, () => {
+        const socket = this.state.socket;
+        socket.on('id', () => {
+          socket.emit('id', this.state.user._id)
+        })
+        socket.on('notification', (notification) => {
+          this.handleNotification(notification)
+        });
+      })
+    }
+  }
+
+  emit(name, data) {
+    const socket = this.state.socket;
+    socket.emit(name, data)
+  }
+
+  handleNotification(notification) {
+    var notifications = this.state.notifications;
+    notifications.push(notification);
+    this.setState({notifications: notifications})
   }
 
   render() {
@@ -52,7 +82,35 @@ class App extends Component {
     				render={props => {
               if(this.state.authenticated) {
                 return (
-                  <Dash user={this.state.user} updateUser={this.updateUser.bind(this)} />
+                  <Dash user={this.state.user} updateUser={this.updateUser.bind(this)} notifications={this.state.notifications} emit={this.emit.bind(this)}/>
+                )
+              } else {
+                return (
+                  <Redirect to='/login'/>
+                )
+              }
+            }}
+    			/>
+          <Route
+    				path ="/dash/:id"
+    				render={props => {
+              if(this.state.authenticated) {
+                return (
+                  <Dash user={this.state.user} updateUser={this.updateUser.bind(this)} notifications={this.state.notifications} emit={this.emit.bind(this)} postId={props.match.params.id}/>
+                )
+              } else {
+                return (
+                  <Redirect to='/login'/>
+                )
+              }
+            }}
+    			/>
+          <Route
+    				path ="/profile/:id"
+    				render={props => {
+              if(this.state.authenticated) {
+                return (
+                  <Profile user={this.state.user} updateUser={this.updateUser.bind(this)} profileId={props.match.params.id} notifications={this.state.notifications} emit={this.emit.bind(this)}/>
                 )
               } else {
                 return (

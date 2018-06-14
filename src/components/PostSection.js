@@ -32,9 +32,11 @@ class PostSection extends Component {
 
   componentWillMount() {
     if (this.props.profile) {
-      var url = ''
+      var url = '/post/profile/' + this.props.profileId;
+    } else if (this.props.postId) {
+      url = '/post/dash/' + this.props.postId;
     } else {
-      url = '/post/dash?id=' + this.props.user._id
+      url = '/post/dash'
     }
     axios.get(url).then(
       response => {
@@ -54,10 +56,10 @@ class PostSection extends Component {
   render() {
     return (
       <div className='Posts'>
-        {!this.props.profile &&
+        {(!this.props.profile || (this.props.profileId === this.props.user._id)) &&
         <PostForm user={this.props.user} newPost={this.newPost.bind(this)}/>
         }
-        < PostList user={this.props.user} posts={this.state.posts} updatePost={this.updatePost.bind(this)} loading={this.state.loading}/>
+        < PostList user={this.props.user} posts={this.state.posts} updatePost={this.updatePost.bind(this)} loading={this.state.loading} emit={this.props.emit.bind(this)}/>
       </div>
     );
   }

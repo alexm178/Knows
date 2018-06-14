@@ -5,6 +5,7 @@ import Navbar from './navbar'
 import ProfileCard from './profile-card'
 import Modal from './modal'
 import PostSection from './PostSection'
+import Notification from './Notification'
 
 
 class Dash extends Component {
@@ -16,7 +17,7 @@ class Dash extends Component {
   render() {
     return (
       <div className ="Dash with-top-navbar">
-        <div className="growl" id="app-growl"></div>
+        <Notification userId={this.props.user._id} notifications={this.props.notifications}/>
         <Navbar user={this.props.user} updateUser={this.props.updateUser}/>
         <div className="container pt-4">
           <div className="row">
@@ -24,7 +25,7 @@ class Dash extends Component {
               < ProfileCard user={this.props.user} updateUser={this.props.updateUser.bind(this)} />
             </div>
             <div className="col-md-6">
-              < PostSection user={this.props.user} profile={false}/>
+              < PostSection user={this.props.user} postId={this.props.postId} profile={false} emit={this.props.emit.bind(this)}/>
             </div>
           </div>
         </div>

@@ -76,7 +76,6 @@ class TimeAgo extends Component {
   }
 
   render() {
-    console.log(this.state.display)
     return(
       <span>{this.state.display}</span>
     )

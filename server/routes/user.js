@@ -1,6 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const User = require('../database/models/user')
+const Post = require('../database/models/post')
+const Comment = require('../database/models/comment')
 const aws = require('aws-sdk')
 
 router.post('/', (req, res) => {
@@ -44,15 +46,33 @@ router.post('/avatar', (req, res) => {
       console.log({err: err});
       res.json(err)
     } else {
-      User.findByIdAndUpdate(req.user._id, {img: "https://s3.us-east-2.amazonaws.com/knows/" + req.body.fileName}, (err, user) => {
+      res.json({signedUrl: data})
+      User.findByIdAndUpdate(req.user._id, {img: "https://s3.us-east-2.amazonaws.com/knows/" + req.body.fileName}, {new: true}, (err, user) => {
         if (err) {
           console.log(err);
-          res.json({err: err})
         } else {
-          res.json({signedUrl: data})
+          user.posts.forEach((post) => {
+            Post.findByIdAndUpdate(post, {$set: {'author.img': user.img}}, (err, post) => {
+              if (err) {
+                console.log(err)
+              }
+            })
+          })
+          Comment.find({'author.id': user._id}, (err, comments) => {
+            comments.forEach((comment) => {
+              comment.author.img = user.img;
+              comment.save()
+            })
+          })
         }
       })
     }
+  })
+})
+
+router.get('/profile/:id', (req, res) => {
+  User.findById(req.params.id, (err, profile) => {
+    res.json({profile: profile})
   })
 })
 
