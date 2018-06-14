@@ -85,22 +85,29 @@ http.listen(PORT, () => {
 const io = require('socket.io')(http);
 
 io.on('connection', (socket) => {
-	console.log('connect')
+	var userId;
 	socket.emit('id')
 	socket.on('id', (id) => {
+		userId = id;
 		User.findByIdAndUpdate(id, {$set: {socket: socket.id}}).exec()
 	});
-	socket.on('like', (data) => {
-		console.log('like')
-		User.findById(data.authorId, '-_id socket', (err, user) => {
+	socket.on('likeOrComment', (data) => {
+		User.findById(data.authorId, 'socket notifications', (err, user) => {
 			if (err) {
 				console.log(err)
-			} else if (user.socket) {
-				socket.to(user.socket).emit('notification', data.notification)
+			} else {
+				if (user.socket) {
+					socket.to(user.socket).emit('notification', data.notification)
+					user.notifications.push({notification: data.notification, seen: true})
+				} else {
+					user.notifications.push({notification: data.notification, seen: false})
+				}
+				user.save()
 			}
 		})
 	})
-	socket.on('disconnent', () => {
+	socket.on('disconnect', () => {
+		console.log('disconnect')
 		User.findByIdAndUpdate(userId, {$set: {socket: null}}).exec()
 	})
 })

@@ -55,7 +55,7 @@ class PostAction extends Component {
           likes: likes,
           liked: true
         });
-        this.props.emit('like', {
+        this.props.emit('likeOrComment', {
           authorId: this.props.post.author.id,
           notification: {
             user: {
@@ -63,7 +63,6 @@ class PostAction extends Component {
   						id: this.props.user._id
   					},
             action: 'liked',
-            possessive: 'your',
   					target: {
   						type: this.props.post.type,
   						id: this.props.post._id

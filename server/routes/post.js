@@ -9,10 +9,6 @@ router.post('/', (req, res) => {
     if (err) {
       res.json({err: err})
     } else {
-      User.findById(req.user._id, (err, user) => {
-        user.posts.push(post._id)
-        user.save()
-      })
       res.json({post: post})
     }
   })
@@ -25,35 +21,17 @@ router.post('/comment/:id', (req, res) => {
       res.json({err: err})
     } else {
       res.json({comment: comment})
-      Post.findById(req.params.id, (err, post) => {
-        if (err) {
-          console.log(err);
-          res.json({err: err})
-        } else {
-          post.comments.push(comment._id);
-          post.save().then(
-            post => {
-              console.log('flerpy nerples')
-            }
-          ).catch(
-            err => {
-              console.log(err)
-            }
-          )
-        }
-      })
+      Post.findByIdAndUpdate(req.params.id, {$inc: {commentCount: 1}}).exec()
     }
   })
 })
 
 router.put('/like', (req, res) => {
-  Post.findById(req.query.id, (err, post) => {
+  Post.findByIdAndUpdate(req.query.id, {$push: {likes: req.body}}, (err, post) => {
     if (err) {
       console.log(err);
       res.json({err: err})
     } else {
-      post.likes.push(req.body);
-      post.save()
       res.json('success')
     }
   })
@@ -70,34 +48,14 @@ router.get('/dash/:id?', (req, res) => {
       }
     })
   } else {
-    User.findById(req.user._id).populate('posts').exec().then(
-      user => {
-        var posts = [];
-        user.posts.forEach((post) => {
-          posts.push(post)
-        })
-        user.following.forEach((following) => {
-          User.findById(following).populate('posts').exec().then(
-            foundFollowing => {
-              foundFollowing.posts.forEach((post) => {
-                posts.push(post)
-              })
-            }
-          ).catch(
-            err => {
-              console.log(err)
-              res.json({err: err})
-            }
-          )
-        })
-        res.json({posts: posts})
-      }
-    ).catch(
-      err => {
+    Post.find({$or: [{'author.id': req.user._id}, {'author.id': {$in: req.user.following}}]}, (err, posts) => {
+      if (err) {
         console.log(err)
         res.json({err: err})
+      } else {
+        res.json({posts: posts})
       }
-    )
+    })
   }
 })
 
@@ -112,17 +70,15 @@ router.get('/profile/:id', (req, res) => {
   })
 })
 
-router.get('/comments/:id', (req, res) => {
-  Post.findById(req.params.id).populate('comments').exec().then(
-    post => {
-      res.json({comments: post.comments})
-    }
-  ).catch(
-    err => {
+router.get('/comments/:postId', (req, res) => {
+  Comment.find({post: req.params.postId}, (err, comments) => {
+    if(err) {
       console.log(err);
       res.json({err: err})
+    } else {
+      res.json({comments: comments})
     }
-  )
+  })
 })
 
 module.exports = router

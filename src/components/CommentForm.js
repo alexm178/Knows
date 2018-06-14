@@ -32,6 +32,20 @@ class CommentForm extends Component {
       response => {
         this.props.addComment(response.data.comment)
         this.setState({content: ''})
+        this.props.emit('likeOrComment', {
+          authorId: this.props.post.author.id,
+          notification: {
+            user: {
+  						name: this.props.user.firstName + ' ' + this.props.user.lastName,
+  						id: this.props.user._id
+  					},
+            action: 'commented on',
+  					target: {
+  						type: this.props.post.type,
+  						id: this.props.post._id
+  					}
+          }
+				})
       }
     ).catch(
       err => {

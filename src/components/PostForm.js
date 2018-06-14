@@ -25,7 +25,8 @@ class PostForm extends Component {
         id: this.props.user._id
       },
       date: Date.now(),
-      type: 'post'
+      type: 'post',
+      commentCount: 0
     }).then(response => {
       var newPost = response.data.post;
       newPost.new = true;

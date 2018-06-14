@@ -22,12 +22,6 @@ var userSchema = new mongoose.Schema({
       img: String
     }
   ],
-  posts: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Post'
-    }
-  ],
   followers: [
     {
       id: {
@@ -38,22 +32,10 @@ var userSchema = new mongoose.Schema({
       img: String
     }
   ],
-  notifications: [
-    {
-      userName: String,
-      userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-      },
-      action: String,
-      targetType: String,
-      targetId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post'
-      },
-      possessive: String
-    }
-  ],
+  notifications: [{
+    notification: {},
+    seen: Boolean
+  }],
   socket: String,
   albums: [
     {

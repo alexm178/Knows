@@ -49,7 +49,7 @@ class Post extends Component {
   }
 
   componentWillMount() {
-    this.setState({commentCount: this.props.post.comments.length})
+    this.setState({commentCount: this.props.post.commentCount})
   }
 
 
