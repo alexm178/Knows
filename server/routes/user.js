@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 const User = require('../database/models/user')
-const Post = require('../database/models/post')
 const Comment = require('../database/models/comment')
 const aws = require('aws-sdk')
 
@@ -73,6 +72,22 @@ router.put('/follow', (req, res) => {
   })
 })
 
-
+router.get('/follows/:which', (req, res) => {
+  User.findById(req.query.id).populate({path: req.params.which, select: 'firstName lastName img'}).exec().then(
+    user => {
+      var follows = (req.params.which === "following" ? user.following : user.followers)
+      var modifiedFollows = follows.map((follow) => {
+        follow.isFollowing = req.user.following.some((userFollowing) => {
+          return userFollowing.equals(follow._id);
+        })
+        return follow
+      })
+      res.json({follows: modifiedFollows})
+    }
+  ).catch(err => {
+    console.log(err);
+    res.json({err: err})
+  })
+})
 
 module.exports = router

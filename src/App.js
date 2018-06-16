@@ -4,7 +4,7 @@ import Signup from './components/signup';
 import Login from './components/login';
 import Dash from './components/dash';
 import Profile from './components/Profile'
-import {Route, Link, Redirect, Switch} from 'react-router-dom'
+import {Route, Redirect, Switch} from 'react-router-dom'
 import io from 'socket.io-client';
 import Notification from './components/Notification'
 
@@ -52,8 +52,8 @@ class App extends Component {
   }
 
   emit(name, data) {
-    const socket = this.state.socket;
-    socket.emit(name, data)
+    console.log('emit', name, data)
+    this.state.socket.emit(name, data)
   }
 
   handleNotification(notification) {

@@ -1,20 +1,17 @@
 import React, { Component } from 'react';
 import TimeAgo from './TimeAgo'
-import AnimateHeight from 'react-animate-height'
 
 
 
 class CommentList extends Component {
-  constructor(props){
-    super(props);
-  }
+
 
   formatComments() {
     var formattedComments = this.props.comments.map(comment => {
       return(
         <li className="media mb-3" key={comment._id}>
         <a href={'/profile/' + comment.author.id}>
-          <img className="media-object d-flex align-self-start mr-3" src={comment.author.img} />
+          <img className="media-object d-flex align-self-start mr-3" src={comment.author.img} alt="Comment Author Avatar"/>
         </a>
         <div className="media-body">
           <div className="media-body-text">

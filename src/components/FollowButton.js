@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import AvatarForm from './avatar-form';
-import axios from 'axios'
-
+import axios from 'axios';
 
 class FollowButton extends Component {
   constructor(props){
@@ -21,15 +19,25 @@ class FollowButton extends Component {
         if (response.data.err) {
           alert("Something went wrong :(")
         } else {
-          this.setState({isFollowing: true})
+          this.setState({isFollowing: true});
+          this.props.emit('follow', {
+            userId: this.props.id,
+            notification: {
+              user: {
+    						name: this.props.user.firstName + ' ' + this.props.user.lastName,
+    						id: this.props.user._id
+    					},
+              action: 'followed you.'
+            }
+          })
         }
       }
     )
   }
 
   render() {
-    if (this.props.id === this.props.userId) {
-      return (<button className="btn btn-secondary disabled btn-small float-right">You</button>)
+    if (this.props.id === this.props.user._id) {
+      return (<button className="btn btn-secondary disabled btn-sm float-right">You</button>)
     } else {
       return (
         <button onClick={this.state.isFollowing ? () => {return false} : this.follow.bind(this)} className={"btn " + (this.state.isFollowing ? "btn-secondary disabled" : "btn-primary") +  " btn-sm float-right"}>

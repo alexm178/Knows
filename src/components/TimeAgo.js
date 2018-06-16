@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import AnimateHeight from 'react-animate-height';
-import PostAction from './PostAction'
-import CommentForm from'./CommentForm'
-import CommentList from './CommentList'
+
 
 
 
@@ -36,7 +33,7 @@ class TimeAgo extends Component {
       token = 'ago',
       list_choice = 1;
 
-    if (seconds == 0) {
+    if (seconds === 0) {
       return 'Just now'
     }
     if (seconds < 0) {
@@ -48,7 +45,7 @@ class TimeAgo extends Component {
       format;
     while (format = time_formats[i++])
       if (seconds < format[0]) {
-        if (typeof format[2] == 'string')
+        if (typeof format[2] === 'string')
           return format[list_choice];
         else
           return Math.floor(seconds / format[2]) + ' ' + format[1] + ' ' + token;

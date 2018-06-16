@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios'
-import AnimateHeight from 'react-animate-height';
-import PostAction from './PostAction'
-
 
 
 class CommentForm extends Component {

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import iceland from '../iceland.jpg';
 import Modal from './modal'
 
 
@@ -85,7 +84,7 @@ class AvatarForm extends Component {
           <Modal
             close={this.closeModal.bind(this)}
             title='Choose Profile Picture:'
-            body={<div><img className='av-selected mt-2' src={this.state.result}/><div className='mb-2 av-btns'><button className='btn btn-secondary mr-2' id='av-cancel'>Cancel</button><button id='av-post' className='btn btn-primary' onClick={this.handleSubmit.bind(this)}>Post</button></div></div>}
+            body={<div><img className='av-selected mt-2' src={this.state.result} alt="Chosen Avatar"/><div className='mb-2 av-btns'><button className='btn btn-secondary mr-2' id='av-cancel'>Cancel</button><button id='av-post' className='btn btn-primary' onClick={this.handleSubmit.bind(this)}>Post</button></div></div>}
           />
         }
 

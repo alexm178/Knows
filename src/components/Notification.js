@@ -16,8 +16,14 @@ class Notification extends Component {
           <a href={'/profile/' + notification.user.id}>
             {notification.user.name}
           </a>
-          {' ' + notification.action + ' your '}
-          <a href={'/dash/' + notification.target.id}>{notification.target.type + '.'}</a>
+          {notification.target &&
+            <span>{' ' + notification.action + ' your '}
+            <a href={'/dash/' + notification.target.id}>{notification.target.type + '.'}</a>
+            </span>
+          }
+          {!notification.target &&
+            <span>{' ' + notification.action}</span>
+          }
         </div>
       )
     })

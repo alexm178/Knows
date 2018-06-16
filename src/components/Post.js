@@ -114,7 +114,7 @@ class Post extends Component {
                 <div className="media-heading">
                   <small className="float-right text-muted"><TimeAgo date={this.props.post.date}/></small>
                   <h6>
-                    <a href={'/profile/' + this.props.post.author.id}>{this.props.post.author.firstName + ' ' + this.props.post.author.lastName}</a>
+                    <a href={'/profile/' + this.props.post.author._id}>{this.props.post.author.firstName + ' ' + this.props.post.author.lastName}</a>
                   </h6>
                 </div>
               <p>

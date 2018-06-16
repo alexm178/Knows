@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios'
-import {Route, Link, Redirect} from 'react-router-dom'
 import brandwhite from '../brand-white.png'
-import {Popover} from 'react-bootstrap'
 
 class Navbar extends Component {
   constructor(props) {
@@ -89,11 +87,6 @@ class Navbar extends Component {
                   <img alt='avatar' className="rounded-circle" src={this.props.user.img} />
                 </a>
               </li>
-            </ul>
-
-            <ul className="nav navbar-nav hidden-xs-up" id="js-popoverContent">
-              <li className="nav-item"><a className="nav-link" href="#" data-action="growl">Growl</a></li>
-              <li className="nav-item"><a className="nav-link" href="../logout">Logout</a></li>
             </ul>
           </div>
         </nav>

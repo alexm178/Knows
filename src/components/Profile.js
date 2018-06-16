@@ -3,7 +3,6 @@ import axios from 'axios'
 import Navbar from './navbar';
 import PostSection from './PostSection';
 import ProfileHeader from './ProfileHeader';
-import {Route, Link, Redirect, Switch} from 'react-router-dom'
 
 
 

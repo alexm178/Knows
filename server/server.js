@@ -108,6 +108,22 @@ io.on('connection', (socket) => {
 			}
 		})
 	})
+	socket.on('follow', (data) => {
+		console.log('follow');
+		User.findById(data.userId, 'socket notifications', (err, user) => {
+			if (err) {
+				console.log(err)
+			} else {
+				if (user.socket) {
+					socket.to(user.socket).emit('notification', data.notification)
+					user.notifications.push({notification: data.notification, seen: true})
+				} else {
+					user.notifications.push({notification: data.notification, seen: false})
+				}
+				user.save()
+			}
+		})
+	})
 	socket.on('disconnect', () => {
 		console.log('disconnect')
 		User.findByIdAndUpdate(userId, {$set: {socket: null}}).exec()

@@ -36,13 +36,13 @@ class ProfileHeader extends Component {
         <nav className="profile-header-nav">
           <ul className="nav nav-tabs justify-content-center">
             <li className="nav-item active">
-              <a className="nav-link collection" id="feed" href="#">Feed</a>
+              <a className="nav-link collection" id="feed" href="feed">Feed</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link collection" id="projects" href="#">Projects</a>
+              <a className="nav-link collection" id="projects" href="projects">Projects</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link collection" id="photos" href="#">Photos</a>
+              <a className="nav-link collection" id="photos" href="photos">Photos</a>
             </li>
           </ul>
         </nav>
