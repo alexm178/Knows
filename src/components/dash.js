@@ -17,7 +17,6 @@ class Dash extends Component {
   render() {
     return (
       <div className ="Dash with-top-navbar">
-        <Notification userId={this.props.user._id} notifications={this.props.notifications}/>
         <Navbar user={this.props.user} updateUser={this.props.updateUser}/>
         <div className="container pt-4">
           <div className="row">

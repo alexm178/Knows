@@ -2,44 +2,21 @@ var mongoose = require('mongoose');
 
 var postSchema = new mongoose.Schema({
   content: String,
-  author:
-    {
-      id:  {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-      },
-      name: 'String',
-      img: 'String'
-    },
-  tags: [
-    {
-      id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-      },
-      name: 'String'
-  }
-],
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   commentCount: Number,
-  subs: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }
-  ],
+  likeCount: Number,
   likes: [
-    {
-      id: {
+      {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-      },
-      name: 'String',
-      img: 'String'
-    }
+      }
   ],
+  liked: Boolean,
   date: 'Number',
   type: 'String',
-
 });
 
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import AvatarForm from './avatar-form'
-
+import AvatarForm from './avatar-form';
+import axios from 'axios'
 
 
 class ProfileHeader extends Component {
@@ -8,6 +8,14 @@ class ProfileHeader extends Component {
     super(props);
     this.state = {
     }
+  }
+
+  follow() {
+    axios.put('/user/follow?id=' + this.props.profile._id).then(
+      response => {
+        console.log(response)
+      }
+    )
   }
 
   render() {
@@ -22,6 +30,7 @@ class ProfileHeader extends Component {
             {this.props.profile.bio}
             </p>
           </div>
+          <button onClick={this.follow.bind(this)}>Follow</button>
         </div>
 
         <nav className="profile-header-nav">

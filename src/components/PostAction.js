@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios'
 import Modal from './modal'
-import CommentForm from './CommentForm'
+import CommentForm from './CommentForm';
+import FollowButton from './FollowButton'
 
 
 
@@ -12,51 +13,56 @@ class PostAction extends Component {
       displayModal: false,
       likes: [],
       liked: null,
-      new: false
+      likeCount: null,
+      new: false,
+      displayComments: false,
+      arrow: 'down'
     }
   }
 
   displayLikes(event) {
     event.preventDefault();
-    var likes = this.props.post.likes.map(like => {
-      return(
-        <li key={like.id} className="list-group-item">
-          <div className="media w-100">
-            <div className="media-object d-flex align-self-start mr-3" style={{backgroundImage: "url('" + like.img + "')", backgroundSize: "cover", backgroundPosition: "center", height: "42px"}}>
-            </div>
-            <div className="media-body">
-              <button className="btn btn-primary btn-sm float-right">
-                <span className="icon icon-add-user mr-1"></span>
-                Follow
-              </button>
-            <a><strong>{like.name}</strong></a>
-            </div>
-          </div>
-        </li>
-      )
-    })
-    this.setState({
-      displayModal: true,
-      likes: likes
-    })
+    axios.get('/post/likes?id=' + this.props.post._id).then(
+      response => {
+        var likes = response.data.likes.map(like => {
+          return(
+            <li key={like._id} className="list-group-item">
+              <div className="media w-100">
+                <div className="media-object d-flex align-self-start mr-3" style={{backgroundImage: "url('" + like.img + "')", backgroundSize: "cover", backgroundPosition: "center", height: "42px"}}>
+                </div>
+                <div className="media-body">
+
+                <FollowButton isFollowing={like.isFollowing} id={like._id} userId={this.props.user._id}/>
+
+                <a href={"/profile/" + like._id}><strong>{like.firstName + ' ' + like.lastName}</strong></a>
+                </div>
+              </div>
+            </li>
+          )
+        })
+        this.setState({
+          displayModal: true,
+          likes: likes
+        })
+      }
+    ).catch(
+      err => {
+        console.log(err);
+        alert('Could not fetch likes :(')
+      }
+    )
   }
 
   like() {
-    var like = {
-      id: this.props.user._id,
-      name: this.props.user.firstName + ' ' + this.props.user.lastName,
-      img: this.props.user.img
-    }
-    axios.put('/post/like?id=' + this.props.post._id, like).then(
+    axios.put('/post/like?id=' + this.props.post._id).then(
       response => {
-        var likes = this.state.likes;
-        likes.push(like)
+        var newLikeCount = this.state.likeCount + 1
         this.setState({
-          likes: likes,
-          liked: true
+          liked: true,
+          likeCount: newLikeCount
         });
         this.props.emit('likeOrComment', {
-          authorId: this.props.post.author.id,
+          authorId: this.props.post.author._id,
           notification: {
             user: {
   						name: this.props.user.firstName + ' ' + this.props.user.lastName,
@@ -79,9 +85,13 @@ class PostAction extends Component {
   }
 
   displayComments() {
-    axios.get('/post/comments/' + this.props.post._id).then(
+    axios.get('/post/comments?id=' + this.props.post._id).then(
       response => {
         this.props.populateComments(response.data.comments);
+        this.setState({
+          displayComments: true,
+          arrow: 'up'
+        })
       }
     ).catch(
       err => {
@@ -91,19 +101,22 @@ class PostAction extends Component {
     )
   }
 
+  hideComments() {
+    this.props.hideComments()
+    this.setState({
+      displayComments: false,
+      arrow: 'down'
+    })
+  }
+
   closeModal() {
     this.setState({displayModal: false})
   }
 
   componentWillMount() {
-    this.setState({likes: this.props.post.likes, new: this.props.post.new}, () => {
-      var liked = false;
-      this.props.post.likes.forEach((like) => {
-        if (like.id === this.props.user._id) {
-          liked = true;
-        }
-      })
-      this.setState({liked: liked})
+    this.setState({
+      liked: this.props.post.liked,
+      likeCount: this.props.likeCount
     })
   }
 
@@ -111,8 +124,8 @@ class PostAction extends Component {
       return(
         <div className='d-flex postAction mb-2'>
           <div className="mr-auto pt-1">
-            <a onClick={this.displayLikes.bind(this)} className="likes mr-2"><span className="icon icon-heart"></span><span className="likeCount">{' ' + this.state.likes.length}</span></a>
-            <a onClick={this.displayComments.bind(this)} className="comments"><span className="icon icon-message"></span><span className="commentCount">{' ' + this.props.commentCount }</span></a>
+            <a onClick={this.displayLikes.bind(this)} className="likes mr-2"><span className="icon icon-heart"></span><span className="likeCount">{' ' + this.state.likeCount}</span></a>
+            <a onClick={this.state.displayComments ? this.hideComments.bind(this) : this.displayComments.bind(this)} className="comments"><span className="icon icon-message"></span><span className="commentCount">{' ' + this.props.commentCount }</span><span className={"icon icon-chevron-small-" + this.state.arrow}></span></a>
           </div>
           <div>
 

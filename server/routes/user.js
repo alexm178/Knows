@@ -7,25 +7,22 @@ const aws = require('aws-sdk')
 
 router.post('/', (req, res) => {
     // ADD VALIDATION
-    User.findOne({ email: req.body.email }, (err, user) => {
+  User.register(new User({firstName: req.body.firstName, lastName: req.body.lastName, username: req.body.email, img: "https://s3.us-east-2.amazonaws.com/knows/avatar.png", cover: "https://s3.us-east-2.amazonaws.com/knows/iceland.jpg"}), req.body.password)
+  .then(
+    user => {
+      req.login(user, (err) => {
         if (err) {
-            console.log('User.js post error: ', err)
-        } else if (user) {
-            res.json({
-                error: "Sorry, the email address " + req.body.email + " is already in use"
-            })
+          console.log(err);
+          res.json({err: 'login'})
+        } else {
+          res.json({authenticated: true, user: user})
         }
-        else {
-
-            User.register(new User({firstName: req.body.firstName, lastName: req.body.lastName, username: req.body.email, img: "https://s3.us-east-2.amazonaws.com/knows/avatar.png", cover: "https://s3.us-east-2.amazonaws.com/knows/iceland.jpg"}), req.body.password)
-            .then(
-              user => {
-                res.json({authenticated: true, user: user})
-              }
-            )
-            .catch(err => {return res.json(err)})
-        }
-    })
+      })
+    }
+  )
+  .catch(err => {
+    res.json({err: err})
+  })
 })
 
 router.post('/avatar', (req, res) => {
@@ -47,25 +44,7 @@ router.post('/avatar', (req, res) => {
       res.json(err)
     } else {
       res.json({signedUrl: data})
-      User.findByIdAndUpdate(req.user._id, {img: "https://s3.us-east-2.amazonaws.com/knows/" + req.body.fileName}, {new: true}, (err, user) => {
-        if (err) {
-          console.log(err);
-        } else {
-          user.posts.forEach((post) => {
-            Post.findByIdAndUpdate(post, {$set: {'author.img': user.img}}, (err, post) => {
-              if (err) {
-                console.log(err)
-              }
-            })
-          })
-          Comment.find({'author.id': user._id}, (err, comments) => {
-            comments.forEach((comment) => {
-              comment.author.img = user.img;
-              comment.save()
-            })
-          })
-        }
-      })
+      User.findByIdAndUpdate(req.user._id, {img: "https://s3.us-east-2.amazonaws.com/knows/" + req.body.fileName}, {new: true}).exec()
     }
   })
 })
@@ -73,6 +52,24 @@ router.post('/avatar', (req, res) => {
 router.get('/profile/:id', (req, res) => {
   User.findById(req.params.id, (err, profile) => {
     res.json({profile: profile})
+  })
+})
+
+router.put('/follow', (req, res) => {
+  User.findByIdAndUpdate(req.query.id, {$push: {'followers': req.user._id}}, (err, user) => {
+    if (err) {
+      console.log(err);
+      res.json({err: err});
+    } else {
+      User.findByIdAndUpdate(req.user._id, {$push: {'following': req.query.id}}, (err, uer) => {
+        if (err) {
+          console.log(err);
+          res.json({err: err})
+        } else {
+          res.json('success')
+        }
+      })
+    }
   })
 })
 

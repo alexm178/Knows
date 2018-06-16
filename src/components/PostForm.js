@@ -19,17 +19,20 @@ class PostForm extends Component {
   handleSubmit(event) {
     axios.post('/post', {
       content: this.state.content,
-      author: {
-        name: this.props.user.firstName + ' ' + this.props.user.lastName,
-        img: this.props.user.img,
-        id: this.props.user._id
-      },
+      author: this.props.user._id,
       date: Date.now(),
       type: 'post',
-      commentCount: 0
+      commentCount: 0,
+      likeCount: 0
     }).then(response => {
       var newPost = response.data.post;
       newPost.new = true;
+      newPost.author = {
+        _id: this.props.user._id,
+        firstName: this.props.user.firstName,
+        lastName: this.props.user.lastName,
+        img: this.props.user.img
+      }
       this.props.newPost(newPost)
       this.setState({content: ''})
     }).catch(err => {

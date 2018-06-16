@@ -59,6 +59,7 @@ class AvatarForm extends Component {
     }, () => {
       axios.post('/user/avatar', {fileName: this.state.file.name + "-" + Date.now(), fileType: this.state.file.type}).then(response => {
         axios.put(response.data.signedUrl, this.state.file).then(result => {
+          console.log(result)
           var newUser = this.props.user;
           newUser.img = "https://s3.us-east-2.amazonaws.com/knows/" + this.state.file.name;
           this.props.updateUser({user: newUser});

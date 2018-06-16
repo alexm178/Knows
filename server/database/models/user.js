@@ -13,25 +13,17 @@ var userSchema = new mongoose.Schema({
   knows: Array,
   bio: String,
   following: [
-    {
-      id: {
+        {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'User'
-        },
-      name: String,
-      img: String
-    }
-  ],
+        }
+      ],
   followers: [
-    {
-      id: {
+        {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'User'
-        },
-      name: String,
-      img: String
-    }
-  ],
+        }
+      ],
   notifications: [{
     notification: {},
     seen: Boolean
@@ -42,7 +34,8 @@ var userSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Album'
     }
-  ]
+  ],
+  isFollowing: Boolean
 });
 
 userSchema.plugin(passportLocalMongoose);

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import TimeAgo from './TimeAgo'
+import AnimateHeight from 'react-animate-height'
 
 
 
@@ -21,7 +22,7 @@ class CommentList extends Component {
               <small className="float-right text-muted">
                 <TimeAgo date={comment.date} />
               </small>
-              <h6><a href={'/profile/' + comment.author.id}><strong>{comment.author.name}</strong></a></h6>
+              <h6><a href={'/profile/' + comment.author._id}><strong>{comment.author.firstName + ' ' + comment.author.lastName}</strong></a></h6>
             </div>
             {comment.content}
           </div>
@@ -35,9 +36,9 @@ class CommentList extends Component {
 
   render() {
     return (
-      <div>
-        {this.formatComments()}
-      </div>
+        <div>
+          {this.formatComments()}
+        </div>
     );
   }
 }

@@ -12,7 +12,7 @@ class Signup extends Component {
       lastName: '',
       email: '',
       password: '',
-      error: false
+      err: false
     }
   }
 
@@ -40,10 +40,11 @@ class Signup extends Component {
       email: this.state.email,
       password: this.state.password
     }).then(response => {
+      console.log(response)
       if (response.data.authenticated) {
         this.props.updateUser(response.data)
-      } else {
-        this.setState({error: true})
+      } else if (response.data.err.message){
+        this.setState({err: response.data.err.message})
       }
     }).catch(error => {
       console.log('signup server error');
@@ -63,9 +64,9 @@ class Signup extends Component {
               <img src={brand} alt="brand" />
             </a>
 
-            {this.state.error &&
-              <div className='alert alert-danger' style={{height: '47px'}}>
-              <p>Could not register.  Please Refresh</p>
+            {this.state.err &&
+              <div className='alert alert-danger'>
+              <p>{this.state.err}</p>
               </div>
             }
 

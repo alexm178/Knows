@@ -22,18 +22,22 @@ class CommentForm extends Component {
     axios.post(url, {
       content: this.state.content,
       date: Date.now(),
-      author: {
-        id: this.props.user._id,
-        name: this.props.user.firstName + ' ' + this.props.user.lastName,
-        img: this.props.user.img,
-      },
+      author: this.props.user._id,
       post: this.props.post._id,
     }).then(
       response => {
-        this.props.addComment(response.data.comment)
+        console.log(response)
+        var comment = response.data.comment;
+        comment.author =  {
+          _id: this.props.user._id,
+          img: this.props.user.img,
+          firstName: this.props.user.firstName,
+          lastName: this.props.user.lastName
+        };
+        this.props.addComment(comment)
         this.setState({content: ''})
         this.props.emit('likeOrComment', {
-          authorId: this.props.post.author.id,
+          authorId: this.props.post.author._id,
           notification: {
             user: {
   						name: this.props.user.firstName + ' ' + this.props.user.lastName,

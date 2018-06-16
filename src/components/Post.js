@@ -15,6 +15,7 @@ class Post extends Component {
       height: 0,
       commentCount: null,
       comments: [],
+      likeCount: null
     }
   }
 
@@ -35,6 +36,10 @@ class Post extends Component {
     })
   }
 
+  hideComments() {
+    this.setState({comments: []})
+  }
+
 
   componentDidMount() {
     if (this.props.post.new) {
@@ -49,7 +54,10 @@ class Post extends Component {
   }
 
   componentWillMount() {
-    this.setState({commentCount: this.props.post.commentCount})
+    this.setState({
+      commentCount: this.props.post.commentCount,
+      likeCount: this.props.post.likeCount
+    })
   }
 
 
@@ -61,7 +69,7 @@ class Post extends Component {
           height={ this.state.height }
         >
 
-        <li id={this.props.post.id} className="card media list-group-item p-4 pb-2 post">
+        <li id={this.props.post._id} className="card media list-group-item p-4 pb-2 post">
           <div
             className="media-object d-flex align-self-start mr-3"
             style={{backgroundImage: "url('" + this.props.post.author.img + "')", backgroundSize: "cover", backgroundPosition: "center"}}>            </div>
@@ -70,7 +78,7 @@ class Post extends Component {
                   <div className="media-heading">
                     <small className="float-right text-muted"><TimeAgo date={this.props.post.date}/></small>
                     <h6>
-                      <a href='../profile/<%%>'>{this.props.post.author.name}</a>
+                      <a href={'/profile/' + this.props.post.author._id}>{this.props.post.author.firstName + ' ' + this.props.post.author.lastName}</a>
                     </h6>
                   </div>
                   <p>
@@ -79,7 +87,7 @@ class Post extends Component {
                 </div>
               </div>
 
-              <PostAction emit={this.props.emit.bind(this)} post={this.props.post} user={this.props.user} commentCount={this.state.commentCount} populateComments={this.populateComments.bind(this)}/>
+              <PostAction emit={this.props.emit.bind(this)} post={this.props.post} commentCount={this.state.commentCount} likeCount={this.state.likeCount} user={this.props.user} populateComments={this.populateComments.bind(this)} hideComments={this.hideComments.bind(this)}/>
 
               <ul className="media-list comment-list">
 
@@ -95,9 +103,9 @@ class Post extends Component {
       )
     } else {
       return (
-        <li id={this.props.post.id} className="card media list-group-item p-4 pb-2 post">
+        <li id={this.props.post._id} className="card media list-group-item p-4 pb-2 post">
 
-            <a  href={'/profile/' + this.props.post.author.id}
+            <a  href={'/profile/' + this.props.post.author._id}
                 className="media-object d-flex align-self-start mr-3"
                 style={{backgroundImage: "url('" + this.props.post.author.img + "')", backgroundSize: "cover", backgroundPosition: "center"}}>
             </a>
@@ -106,7 +114,7 @@ class Post extends Component {
                 <div className="media-heading">
                   <small className="float-right text-muted"><TimeAgo date={this.props.post.date}/></small>
                   <h6>
-                    <a href={'/profile/' + this.props.post.author.id}>{this.props.post.author.name}</a>
+                    <a href={'/profile/' + this.props.post.author.id}>{this.props.post.author.firstName + ' ' + this.props.post.author.lastName}</a>
                   </h6>
                 </div>
               <p>
@@ -114,7 +122,7 @@ class Post extends Component {
               </p>
             </div>
 
-            <PostAction emit={this.props.emit.bind(this)} post={this.props.post} user={this.props.user} commentCount={this.state.commentCount} populateComments={this.populateComments.bind(this)}/>
+            <PostAction emit={this.props.emit.bind(this)} post={this.props.post} user={this.props.user} commentCount={this.state.commentCount} likeCount={this.state.likeCount} populateComments={this.populateComments.bind(this)} hideComments={this.hideComments.bind(this)}/>
 
             <ul className="media-list comment-list">
 

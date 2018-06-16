@@ -85,9 +85,11 @@ http.listen(PORT, () => {
 const io = require('socket.io')(http);
 
 io.on('connection', (socket) => {
+	console.log('connect')
 	var userId;
 	socket.emit('id')
 	socket.on('id', (id) => {
+		console.log('id')
 		userId = id;
 		User.findByIdAndUpdate(id, {$set: {socket: socket.id}}).exec()
 	});
