@@ -10,11 +10,7 @@ import Notification from './components/Notification'
 import "./css/toolkit.css";
 
 import "./css/application.css";
-import "./js/jquery.min.js"
-import "./js/tether.min.js"
-import "./js/chart.js"
-import "./js/toolkit.js"
-import "./js/application.js"
+
 
 
 
