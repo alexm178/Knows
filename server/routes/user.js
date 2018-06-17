@@ -6,7 +6,7 @@ const aws = require('aws-sdk')
 
 router.post('/', (req, res) => {
     // ADD VALIDATION
-  User.register(new User({firstName: req.body.firstName, lastName: req.body.lastName, username: req.body.email, img: "https://s3.us-east-2.amazonaws.com/knows/avatar.png", cover: "https://s3.us-east-2.amazonaws.com/knows/iceland.jpg"}), req.body.password)
+  User.register(new User({firstName: req.body.firstName, lastName: req.body.lastName, username: req.body.email, img: "http://d2nyad70j27i0j.cloudfront.net/avatar.png", cover: "http://d2nyad70j27i0j.cloudfront.net/iceland.jpg"}), req.body.password)
   .then(
     user => {
       req.login(user, (err) => {
@@ -25,7 +25,6 @@ router.post('/', (req, res) => {
 })
 
 router.post('/avatar', (req, res) => {
-  console.log(req.body)
   var s3 = new aws.S3({signatureVersion: 'v4', region: 'us-east-2'});
 
 
@@ -43,10 +42,11 @@ router.post('/avatar', (req, res) => {
       res.json(err)
     } else {
       res.json({signedUrl: data})
-      User.findByIdAndUpdate(req.user._id, {img: "https://s3.us-east-2.amazonaws.com/knows/" + req.body.fileName}, {new: true}).exec()
+      User.findByIdAndUpdate(req.user._id, {img: "http://d2nyad70j27i0j.cloudfront.net/" + req.body.fileName}, {new: true}).exec()
     }
   })
 })
+
 
 router.get('/profile/:id', (req, res) => {
   User.findById(req.params.id, (err, profile) => {

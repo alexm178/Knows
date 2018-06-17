@@ -7,6 +7,14 @@ import Profile from './components/Profile'
 import {Route, Redirect, Switch} from 'react-router-dom'
 import io from 'socket.io-client';
 import Notification from './components/Notification'
+import "./css/toolkit.css";
+
+import "./css/application.css";
+import "./js/jquery.min.js"
+import "./js/tether.min.js"
+import "./js/chart.js"
+import "./js/toolkit.js"
+import "./js/application.js"
 
 
 

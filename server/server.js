@@ -7,11 +7,12 @@ const MongoStore = require('connect-mongo')(session)
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const app = express()
-const PORT = 3001
 const User = require('./database/models/user')
 const Post = require('./database/models/post')
 
 
+const path = require('path');
+app.use(express.static(path.resolve(__dirname, '../build')));
 
 // MIDDLEWARE
 app.use(morgan('dev'))
@@ -67,10 +68,12 @@ const index = require('./routes/index')
 const user = require('./routes/user')
 const post = require('./routes/post')
 
-app.use('/', index)
-app.use('/user', user)
-app.use('/post', post)
+app.use('/', index);
+app.use('/user', user);
+app.use('/post', post);
 
+const normalizePort = port => parseInt(port, 10);
+const PORT = normalizePort(process.env.PORT || 3001);
 
 // Starting Server
 const http = require('http').Server(app)
@@ -128,4 +131,11 @@ io.on('connection', (socket) => {
 		console.log('disconnect')
 		User.findByIdAndUpdate(userId, {$set: {socket: null}}).exec()
 	})
+})
+
+const test = app.get('env');
+console.log(test);
+
+app.get('*', (req, res) => {
+	res.sendFile(path.resolve(__dirname, '../build', 'index.html'))
 })
