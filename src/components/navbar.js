@@ -38,9 +38,11 @@ class Navbar extends Component {
             <span className="navbar-toggler-icon"></span>
           </button>
 
+
           <a className="navbar-brand" href="/dash">
             <img src={brandwhite} alt="brand" />
           </a>
+          
 
           <div className="collapse navbar-collapse" id="navbarResponsive">
             <ul className="navbar-nav mr-auto">

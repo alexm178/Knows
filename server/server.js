@@ -11,8 +11,8 @@ const User = require('./database/models/user')
 const Post = require('./database/models/post')
 
 
-const path = require('path');
-app.use(express.static(path.resolve(__dirname, '../build')));
+// const path = require('path');
+// app.use(express.static(path.resolve(__dirname, '../build')));
 
 // MIDDLEWARE
 app.use(morgan('dev'))
@@ -136,6 +136,6 @@ io.on('connection', (socket) => {
 const test = app.get('env');
 console.log(test);
 
-app.get('*', (req, res) => {
-	res.sendFile(path.resolve(__dirname, '../build', 'index.html'))
-})
+// app.get('*', (req, res) => {
+// 	res.sendFile(path.resolve(__dirname, '../build', 'index.html'))
+// })

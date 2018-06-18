@@ -2863,6 +2863,7 @@ tbody.collapse.show {
   padding: 0.5rem 1rem; }
 
 .navbar-brand {
+  align-self: flex-start;
   display: inline-block;
   padding-top: .25rem;
   padding-bottom: .25rem;

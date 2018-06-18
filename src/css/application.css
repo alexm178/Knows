@@ -27,6 +27,7 @@ strong {
 .app-navbar {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  width: 100vw !important
 }
 .app-navbar .form-control {
   box-shadow: none;
