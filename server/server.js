@@ -16,10 +16,6 @@ const dev = app.get('env') !== "production";
 if (!dev) {
 	const path = require('path');
 	app.use(express.static(path.resolve(__dirname, '../build')));
-
-	app.get('*', (req, res) => {
-		res.sendFile(path.resolve(__dirname, '../build', 'index.html'))
-	})
 }
 
 // MIDDLEWARE
@@ -140,3 +136,9 @@ io.on('connection', (socket) => {
 		User.findByIdAndUpdate(userId, {$set: {socket: null}}).exec()
 	})
 })
+
+if (!dev) {
+	app.get('*', (req, res) => {
+		res.sendFile(path.resolve(__dirname, '../build', 'index.html'))
+	})
+}
