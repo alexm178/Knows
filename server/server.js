@@ -11,8 +11,16 @@ const User = require('./database/models/user')
 const Post = require('./database/models/post')
 
 
-// const path = require('path');
-// app.use(express.static(path.resolve(__dirname, '../build')));
+const dev = app.get('env') !== "production";
+
+if (!dev) {
+	const path = require('path');
+	app.use(express.static(path.resolve(__dirname, '../build')));
+
+	app.get('*', (req, res) => {
+		res.sendFile(path.resolve(__dirname, '../build', 'index.html'))
+	})
+}
 
 // MIDDLEWARE
 app.use(morgan('dev'))
@@ -132,10 +140,3 @@ io.on('connection', (socket) => {
 		User.findByIdAndUpdate(userId, {$set: {socket: null}}).exec()
 	})
 })
-
-const test = app.get('env');
-console.log(test);
-
-// app.get('*', (req, res) => {
-// 	res.sendFile(path.resolve(__dirname, '../build', 'index.html'))
-// })
