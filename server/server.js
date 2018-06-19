@@ -9,12 +9,12 @@ const LocalStrategy = require('passport-local').Strategy;
 const app = express()
 const User = require('./database/models/user')
 const Post = require('./database/models/post')
-
+const path = require('path')
 
 const dev = app.get('env') !== "production";
+console.log(dev)
 
 if (!dev) {
-	const path = require('path');
 	app.use(express.static(path.resolve(__dirname, '../build')));
 }
 
