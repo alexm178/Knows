@@ -10,7 +10,7 @@ class CommentList extends Component {
     var formattedComments = this.props.comments.map(comment => {
       return(
         <li className="media mb-3" key={comment._id}>
-        <a href={'/profile/' + comment.author.id}>
+        <a href={'/profile/' + comment.author._id}>
           <img className="media-object d-flex align-self-start mr-3" src={comment.author.img} alt="Comment Author Avatar"/>
         </a>
         <div className="media-body">

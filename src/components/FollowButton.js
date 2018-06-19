@@ -10,7 +10,10 @@ class FollowButton extends Component {
   }
 
   componentWillMount() {
-    this.setState({isFollowing: this.props.isFollowing})
+    this.setState({
+      isFollowing: this.props.isFollowing,
+      floatButton: (this.props.isProfile ? false : "float-right")
+    })
   }
 
   follow() {
@@ -36,15 +39,18 @@ class FollowButton extends Component {
   }
 
   render() {
-    if (this.props.id === this.props.user._id) {
+    if (this.props.id === this.props.user._id && !this.props.isProfile) {
       return (<button className="btn btn-secondary disabled btn-sm float-right">You</button>)
-    } else {
+    } else if (this.props.id !== this.props.user._id){
       return (
-        <button onClick={this.state.isFollowing ? () => {return false} : this.follow.bind(this)} className={"btn " + (this.state.isFollowing ? "btn-secondary disabled" : "btn-primary") +  " btn-sm float-right"}>
+        <button onClick={this.state.isFollowing ? () => {return false} : this.follow.bind(this)} className={"btn " + (this.state.isFollowing ? "btn-secondary disabled" : "btn-primary") +  " btn-sm " + this.state.floatButton}>
           <span className={"icon " +(this.state.isFollowing ? "icon-check" : "icon-add-user")  + " mr-1"}></span>
           {this.state.isFollowing ? "Following" : "Follow"}
         </button>
       );
+    }
+    else {
+      return null
     }
   }
 }

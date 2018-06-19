@@ -25,7 +25,7 @@ class PostAction extends Component {
       response => {
         var likes = response.data.likes.map(like => {
           return(
-            <UserListItem key={like._id} emit={this.props.emit.bind(this)} person={like} user={this.props.user} />
+            <UserListItem isProfile={false} key={like._id} emit={this.props.emit.bind(this)} person={like} user={this.props.user} />
           )
         })
         this.setState({

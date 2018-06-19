@@ -6,6 +6,7 @@ class Navbar extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      collapse: "collapse"
     }
   }
 
@@ -23,28 +24,36 @@ class Navbar extends Component {
 
   }
 
+  toggleNavbar() {
+    if (this.state.collapse === false) {
+      this.setState({
+        collapse: "collapse"
+      });
+    } else {
+      this.setState({
+        collapse: false
+      });
+    }
+  }
 
   render() {
       return (
         <nav className="navbar navbar-toggleable-sm fixed-top navbar-inverse bg-primary app-navbar">
           <button
             className="navbar-toggler navbar-toggler-right hidden-md-up"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarResponsive"
-            aria-controls="navbarResponsive"
-            aria-expanded="false"
-            aria-label="Toggle navigation">
+            onClick={this.toggleNavbar.bind(this)}
+            >
             <span className="navbar-toggler-icon"></span>
           </button>
+
 
 
           <a className="navbar-brand" href="/dash">
             <img src={brandwhite} alt="brand" />
           </a>
-          
 
-          <div className="collapse navbar-collapse" id="navbarResponsive">
+
+          <div className={"navbar-collapse " + this.state.collapse} id="navbarResponsive">
             <ul className="navbar-nav mr-auto">
               <li className="nav-item active">
                 <a className="nav-link" href="/dash">Home <span className="sr-only">(current)</span></a>
@@ -59,9 +68,6 @@ class Navbar extends Component {
 
               <li className="nav-item hidden-md-up">
                 <a className="nav-link" href="../notifications/index.ejs">Notifications</a>
-              </li>
-              <li className="nav-item hidden-md-up">
-                <a className="nav-link" data-action="growl">Growl</a>
               </li>
               <li className="nav-item hidden-md-up">
                 <a onClick={this.logOut.bind(this)} className="nav-link">Logout</a>

@@ -20,7 +20,7 @@ class ProfileCard extends Component {
       response => {
         var follows = response.data.follows.map(follow => {
           return(
-            <UserListItem emit={this.props.emit.bind(this)} key={follow._id} person={follow} user={this.props.user} />
+            <UserListItem isProfile={false} emit={this.props.emit.bind(this)} key={follow._id} person={follow} user={this.props.user} />
           )
         });
         this.setState({

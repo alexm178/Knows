@@ -39,7 +39,7 @@ class Profile extends Component {
         <div className ="Profile with-top-navbar">
           <div className="growl" id="app-growl"></div>
           <Navbar user={this.props.user} updateUser={this.props.updateUser}/>
-          <ProfileHeader profile={this.state.profile} updateUser={this.props.updateUser.bind(this)}/>
+          <ProfileHeader user={this.props.user} profile={this.state.profile} updateUser={this.props.updateUser.bind(this)} emit={this.props.emit.bind(this)}/>
           <div className="container pt-4">
             <div className="row">
               <div className="col-md-4">
