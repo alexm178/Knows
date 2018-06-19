@@ -10,6 +10,7 @@ const app = express()
 const User = require('./database/models/user')
 const Post = require('./database/models/post')
 const path = require('path')
+require('dotenv').config()
 
 const dev = app.get('env') !== "production";
 console.log(dev)
@@ -28,11 +29,10 @@ app.use(
 app.use(bodyParser.json())
 
 
-
 // SESSIONS
 app.use(
 	session({
-		secret: 'fraggle-rock', //pick a random string to make the hash that is generated secure
+		secret: process.env.PASSPORT_SECRET, //pick a random string to make the hash that is generated secure
 		resave: false, //required
 		saveUninitialized: false, //required
     store: new MongoStore({

@@ -25,7 +25,12 @@ router.post('/', (req, res) => {
 })
 
 router.post('/avatar', (req, res) => {
-  var s3 = new aws.S3({signatureVersion: 'v4', region: 'us-east-2'});
+  var s3 = new aws.S3({
+    signatureVersion: 'v4',
+    region: 'us-east-2',
+    accessKeyId: process.env.AWS_KEY,
+    secretAccessKey: process.env.AWS_SECRET
+  });
 
 
   var params = {

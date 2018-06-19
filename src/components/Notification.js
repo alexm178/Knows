@@ -12,7 +12,8 @@ class Notification extends Component {
   componentWillReceiveProps(){
     var formattedNotifications = this.props.notifications.map((notification, index) => {
       return (
-        <div key={index} className="alert alert-dark alert-dismissible fade show" role="alert"><button type="button" className="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <div key={index} className="alert alert-dark alert-dismissible fade show" role="alert">
+        <button type="button" className="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
           <a href={'/profile/' + notification.user.id}>
             {notification.user.name}
           </a>
