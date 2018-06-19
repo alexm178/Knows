@@ -67,6 +67,12 @@ class App extends Component {
     this.setState({notifications: notifications})
   }
 
+  dismissNotification(index) {
+    var notifications = this.state.notifications;
+    notifications.splice(index, 1);
+    this.setState({notifications: notifications})
+  }
+
   render() {
     if (this.state.user === 'loading') {
       return (<div className="spinner"><div className="dot1"></div><div className="dot2"></div></div>)
@@ -75,7 +81,7 @@ class App extends Component {
         <div className='App'>
           <div className='main'>
             {this.state.user !== null &&
-              <Notification userId={this.state.user._id} notifications={this.state.notifications}/>
+              <Notification userId={this.state.user._id} notifications={this.state.notifications} dismissNotification={this.dismissNotification.bind(this)}/>
             }
           </div>
           <div className='router'>

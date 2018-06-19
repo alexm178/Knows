@@ -6,14 +6,18 @@ import React, { Component } from 'react';
 class Notification extends Component {
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      notifications: []
+    }
   }
+
+
 
   componentWillReceiveProps(){
     var formattedNotifications = this.props.notifications.map((notification, index) => {
       return (
         <div key={index} className="alert alert-dark alert-dismissible fade show" role="alert">
-        <button type="button" className="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <button className="close" onClick={() => {this.props.dismissNotification(index)}}><span aria-hidden="true">×</span></button>
           <a href={'/profile/' + notification.user.id}>
             {notification.user.name}
           </a>

@@ -6,7 +6,9 @@ class Navbar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      collapse: "collapse"
+      collapse: "collapse",
+      search: '',
+      redirectTo: null
     }
   }
 
@@ -34,6 +36,30 @@ class Navbar extends Component {
         collapse: false
       });
     }
+  }
+
+  handleChange(event) {
+    this.setState({
+      search: event.target.value
+    })
+  }
+
+  handleSubmit(event) {
+    event.preventDefault()
+    axios.get("/search?terms=" + this.state.search).then(
+      response => {
+        this.props.history.push({pathname: "/search"})
+        this.setState({
+          results: response.data.results,
+          redirectTo: "/search"
+        })
+      }
+    ).catch(
+      err => {
+        console.log(err);
+        alert("Something went wrong")
+      }
+    )
   }
 
   render() {
@@ -75,8 +101,8 @@ class Navbar extends Component {
 
             </ul>
 
-            <form className="form-inline float-right hidden-sm-down">
-              <input className="form-control" type="text" data-action="grow" placeholder="Search" />
+            <form onSubmit={this.handleSubmit.bind(this)} className="form-inline float-right hidden-sm-down">
+              <input onChange={this.handleChange.bind(this)} className="form-control" type="text" value={this.state.search} placeholder="Search" />
             </form>
 
             <ul id="#js-popoverContent" className="nav navbar-nav float-right mr-0 hidden-sm-down">

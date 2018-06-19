@@ -101,6 +101,7 @@ io.on('connection', (socket) => {
 		User.findByIdAndUpdate(id, {$set: {socket: socket.id}}).exec()
 	});
 	socket.on('likeOrComment', (data) => {
+		console.log('likeOrComment')
 		User.findById(data.authorId, 'socket notifications', (err, user) => {
 			if (err) {
 				console.log(err)
@@ -134,6 +135,12 @@ io.on('connection', (socket) => {
 	socket.on('disconnect', () => {
 		console.log('disconnect')
 		User.findByIdAndUpdate(userId, {$set: {socket: null}}).exec()
+	})
+})
+
+app.get('/search', (req, res) => {
+	User.find({firstName: req.query.terms}, 'firstName lastName', (err, users) => {
+		res.json({results: users})
 	})
 })
 
