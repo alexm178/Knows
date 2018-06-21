@@ -71,10 +71,12 @@ passport.deserializeUser(User.deserializeUser());
 const index = require('./routes/index')
 const user = require('./routes/user')
 const post = require('./routes/post')
+const search = require('./routes/search')
 
 app.use('/', index);
 app.use('/user', user);
 app.use('/post', post);
+app.use('/search', search)
 
 const normalizePort = port => parseInt(port, 10);
 const PORT = normalizePort(process.env.PORT || 3001);
@@ -138,11 +140,9 @@ io.on('connection', (socket) => {
 	})
 })
 
-app.get('/search', (req, res) => {
-	User.find({firstName: req.query.terms}, 'firstName lastName', (err, users) => {
-		res.json({results: users})
-	})
-})
+
+
+
 
 if (!dev) {
 	app.get('*', (req, res) => {

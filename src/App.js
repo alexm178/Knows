@@ -3,7 +3,8 @@ import axios from 'axios'
 import Signup from './components/signup';
 import Login from './components/login';
 import Dash from './components/dash';
-import Profile from './components/Profile'
+import Profile from './components/Profile';
+import Search from "./components/Search"
 import {Route, Redirect, Switch} from 'react-router-dom'
 import io from 'socket.io-client';
 import Notification from './components/Notification'
@@ -166,6 +167,14 @@ class App extends Component {
                   }
                 }}
               />
+              <Route
+        				path ="/search"
+        				render={props => {
+                  return (
+                    <Search query={props.location.search} user={this.state.user} updateUser={this.updateUser.bind(this)} emit={this.emit.bind(this)}/>
+                  )
+                }}
+        			/>
         		</Switch>
           </div>
         </div>

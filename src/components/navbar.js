@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios'
-import brandwhite from '../brand-white.png'
+import brandwhite from '../brand-white.png';
+import {Redirect} from "react-router-dom"
 
 class Navbar extends Component {
   constructor(props) {
@@ -46,23 +47,15 @@ class Navbar extends Component {
 
   handleSubmit(event) {
     event.preventDefault()
-    axios.get("/search?terms=" + this.state.search).then(
-      response => {
-        this.props.history.push({pathname: "/search"})
-        this.setState({
-          results: response.data.results,
-          redirectTo: "/search"
-        })
-      }
-    ).catch(
-      err => {
-        console.log(err);
-        alert("Something went wrong")
-      }
-    )
+    this.setState({redirectTo: "/search?terms=" + this.state.search})
   }
 
   render() {
+    if (this.state.redirectTo) {
+      return (
+        <Redirect to={this.state.redirectTo} />
+      )
+    } else {
       return (
         <nav className="navbar navbar-toggleable-sm fixed-top navbar-inverse bg-primary app-navbar">
           <button
@@ -125,6 +118,7 @@ class Navbar extends Component {
           </div>
         </nav>
       );
+    }
   }
 }
 

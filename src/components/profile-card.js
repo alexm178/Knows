@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import AvatarForm from './avatar-form';
 import axios from 'axios';
 import UserListItem from './UserListItem';
-import Modal from './modal'
+import Modal from './modal';
+import FollowButton from './FollowButton'
 
 
 class ProfileCard extends Component {
@@ -48,7 +49,9 @@ class ProfileCard extends Component {
                   <div className="card-profile-img" style={{backgroundImage: 'url(' + this.props.user.img + ')'}}>
                   </div>
                 </a>
-                <AvatarForm user={this.props.user} updateUser={this.props.updateUser.bind(this)} />
+                {this.props.owner &&
+                  <AvatarForm user={this.props.user} updateUser={this.props.updateUser.bind(this)} />
+                }
               </div>
 
               <h6 className="card-title">
@@ -57,21 +60,30 @@ class ProfileCard extends Component {
 
               <p className="mb-4">{this.props.user.bio}</p>
 
-              <ul className="card-menu">
-                <li onClick={() => {this.getFollows("following")}} className="card-menu-item">
-                  <a id="following" href="#userModal" className="text-inherit" data-toggle="modal">
-                    Following
-                    <h6 className="my-0">{this.props.user.following.length}</h6>
-                  </a>
-                </li>
+              <div className="mb-2">
+              {!this.props.owner &&
+                <FollowButton isFollowing={this.props.isFollowing} id={this.props.user._id} isProfile={true} user={this.props.userViewing}/>
+              }
+              </div>
 
-                <li onClick={() => {this.getFollows("followers")}} className="card-menu-item">
-                  <a id="followers" href="#userModal" className="text-inherit" data-toggle="modal">
-                    Followers
-                    <h6 className="my-0">{this.props.user.followers.length}</h6>
-                  </a>
-                </li>
-              </ul>
+              <div>
+                <ul className="card-menu">
+                  <li onClick={() => {this.getFollows("following")}} className="card-menu-item">
+                    <a id="following" href="#userModal" className="text-inherit" data-toggle="modal">
+                      Following
+                      <h6 className="my-0">{this.props.user.following.length}</h6>
+                    </a>
+                  </li>
+
+                  <li onClick={() => {this.getFollows("followers")}} className="card-menu-item">
+                    <a id="followers" href="#userModal" className="text-inherit" data-toggle="modal">
+                      Followers
+                      <h6 className="my-0">{this.props.user.followers.length}</h6>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
             </div>
           </div>
           {this.state.displayModal &&

@@ -21,14 +21,6 @@ class PostSection extends Component {
     this.setState({posts: posts})
   }
 
-  updatePost(newPost) {
-    var posts = this.state.posts
-    var index = posts.find((post) => {
-      return post._id === newPost._id
-    })
-    posts.splice(index, 1, newPost);
-    this.setState({posts: posts})
-  }
 
   componentWillMount() {
     if (this.props.profile) {
@@ -59,7 +51,7 @@ class PostSection extends Component {
         {(!this.props.profile || (this.props.profileId === this.props.user._id)) &&
         <PostForm user={this.props.user} newPost={this.newPost.bind(this)}/>
         }
-        < PostList user={this.props.user} posts={this.state.posts} updatePost={this.updatePost.bind(this)} loading={this.state.loading} emit={this.props.emit.bind(this)}/>
+        < PostList user={this.props.user} posts={this.state.posts} loading={this.state.loading} emit={this.props.emit.bind(this)}/>
       </div>
     );
   }
