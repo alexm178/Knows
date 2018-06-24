@@ -11,10 +11,11 @@ class PostSection extends Component {
 
   updatePost(newPost) {
     var posts = this.state.posts
-    var index = posts.find((post) => {
-      return post._id === newPost._id
+    var index = posts.findIndex((post) => {
+      return post.props.post._id === newPost._id
     })
-    posts.splice(index, 1, newPost);
+    var newElement = <Post key={newPost._id} post={newPost} user={this.props.user} updatePost={this.updatePost.bind(this)} emit={this.props.emit.bind(this)}/>
+    posts.splice(index, 1, newElement);
     this.setState({posts: posts})
   }
 
@@ -24,7 +25,7 @@ class PostSection extends Component {
         return b.date - a.date;
       })
       var posts = sortedPostList.map((post) => {
-        return <Post key={post._id} post={post} user={props.user} updatePost={this.updatePost.bind(this)} emit={this.props.emit.bind(this)}/>
+        return <Post key={post._id} post={post} user={this.props.user} updatePost={this.updatePost.bind(this)} emit={this.props.emit.bind(this)}/>
       })
       this.setState({posts: posts})
     }

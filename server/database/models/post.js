@@ -15,8 +15,8 @@ var postSchema = new mongoose.Schema({
       }
   ],
   liked: Boolean,
-  date: 'Number',
-  type: 'String',
+  date: Number,
+  type: String,
 });
 
 

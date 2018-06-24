@@ -11,30 +11,35 @@ class PostSection extends Component {
     super(props);
     this.state ={
       posts: [],
-      loading: true
+      loading: true,
+      mongoSkip: 0
     }
   }
 
   newPost(newPost) {
     var posts = this.state.posts;
     posts.push(newPost);
+    console.log(posts)
     this.setState({posts: posts})
   }
 
 
   componentWillMount() {
     if (this.props.profile) {
-      var url = '/post/profile/' + this.props.profileId;
+      var url = '/post/profile/' + this.props.profileId + '/?skip=' + this.state.mongoSkip;
     } else if (this.props.postId) {
-      url = '/post/dash/' + this.props.postId;
+      url = '/post/dash/' + this.props.postId + '/?skip=' + this.state.mongoSkip;
     } else {
       url = '/post/dash'
     }
     axios.get(url).then(
       response => {
+        var mongoSkip = this.state.mongoSkip;
+        mongoSkip += 25;
         this.setState({
           posts: response.data.posts,
-          loading: false
+          loading: false,
+          mongoSkip: mongoSkip
         })
       }
     ).catch(

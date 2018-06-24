@@ -49,7 +49,7 @@ class ProfileCard extends Component {
                   <div className="card-profile-img" style={{backgroundImage: 'url(' + this.props.user.img + ')'}}>
                   </div>
                 </a>
-                {this.props.owner &&
+                {this.props.isDash &&
                   <AvatarForm user={this.props.user} updateUser={this.props.updateUser.bind(this)} />
                 }
               </div>
@@ -61,9 +61,11 @@ class ProfileCard extends Component {
               <p className="mb-4">{this.props.user.bio}</p>
 
               <div className="mb-2">
-              {!this.props.owner &&
+
+              {!this.props.isDash &&
                 <FollowButton isFollowing={this.props.isFollowing} id={this.props.user._id} isProfile={true} user={this.props.userViewing}/>
               }
+
               </div>
 
               <div>

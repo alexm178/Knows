@@ -39,7 +39,8 @@ router.put('/like', (req, res) => {
 
 router.get('/dash/:id?', (req, res) => {
   if (req.params.id) {
-    Post.findById(req.params.id).populate({
+    Post.findById(req.params.id)
+    .populate({
       path: 'author',
       select: 'firstName lastName img'
     }).then(
@@ -54,6 +55,9 @@ router.get('/dash/:id?', (req, res) => {
     )
   } else {
     Post.find({$or: [{'author': req.user._id}, {'author': {$in: req.user.following}}]})
+    .sort("-date")
+    .skip(Number(req.query.skip))
+    .limit(25)
     .populate({
       path: 'author',
       select: 'firstName lastName img'
@@ -71,7 +75,11 @@ router.get('/dash/:id?', (req, res) => {
 })
 
 router.get('/profile/:id', (req, res) => {
-  Post.find({'author': req.params.id}).populate({
+  Post.find({'author': req.params.id})
+  .sort('-date')
+  .skip(Number(req.query.skip))
+  .limit(5)
+  .populate({
     path: 'author',
     select: 'firstName lastName img'
   }).then(

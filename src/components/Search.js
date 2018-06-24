@@ -3,6 +3,9 @@ import axios from "axios";
 import ProfileCard from "./profile-card";
 import Navbar from "./navbar";
 import Post from "./Post";
+import Slider from "react-slick"
+
+
 
 
 class Search extends Component {
@@ -25,14 +28,15 @@ class Search extends Component {
 
   componentWillMount() {
     axios.get("/search" + this.props.query).then(results => {
+      console.log(results)
       var profileCards = results.data.users.map(user => {
         return (
 
-          < ProfileCard className="col-md-6 col-lg-3 mr-2" key={user._id} user={user} owner={false} emit={this.props.emit.bind(this)} userViewing={this.props.user} isFollowing={this.props.user.following.some((follow) => {return follow === user._id})}/>
+          < ProfileCard key={user._id} user={user} owner={false} emit={this.props.emit.bind(this)} userViewing={this.props.user} isFollowing={this.props.user.following.some((follow) => {return follow === user._id})}/>
         )
       });
       var posts = results.data.posts.map((post) => {
-        return <Post className="col-md-6 col-lg-3 mr-2" key={post._id} post={post} user={this.props.user} updatePost={this.updatePost.bind(this)} emit={this.props.emit.bind(this)}/>
+        return <div className="search"><Post key={post._id} post={post} user={this.props.user} updatePost={this.updatePost.bind(this)} emit={this.props.emit.bind(this)}/></div>
       })
       this.setState({
         profileCards: profileCards,
@@ -49,16 +53,27 @@ class Search extends Component {
       <div className="Search with-top-navbar">
         <Navbar user={this.props.user} updateUser={this.props.updateUser}/>
         <div className="container pt-4">
-        <div className="container-inner">
-          <div className="row">
 
-            {this.state.profileCards}
+
+
+
+            <Slider
+              className="mr-2"
+              responsive={[
+                { breakpoint: 768,
+                  settings: { slidesToShow: 3 }
+                },
+                { breakpoint: 1024,
+                  settings: { slidesToShow: 5 }
+                } ]	}
+            >
             {this.state.posts}
+            </Slider>
+            {this.state.profileCards}
 
 
-            </div>
 
-          </div>
+
         </div>
       </div>
     );

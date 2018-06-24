@@ -23,8 +23,9 @@
     "react-dom": "^16.4.0",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.1.4",
-    "react-scroll-horizontal": "^1.4.0",
+    "react-slick": "^0.23.1",
     "react-spinners": "^0.3.2",
+    "slick-carousel": "^1.8.1",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1"
   },
@@ -33,7 +34,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "dev": "concurrently \"react-scripts start\" \"nodemon server/server.js\""
+    "server": "node server/server.js",
+    "con": "concurrently \"react-scripts start\" \"nodemon server/server.js\"",
+    "dev": "react-scripts start"
   },
   "proxy": "http://localhost:3001",
   "devDependencies": {
