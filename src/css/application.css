@@ -4,6 +4,10 @@
  * copyright @colossal 2015
  */
 
+ .profile-header{
+   overflow: hidden
+ }
+
  .edit-cover{
    position: absolute;
    top: 100%;
@@ -112,7 +116,6 @@
     text-align: center;
     height: 20px;
     display: inline-block;
-    color: #636c72;
     font-weight: 500;
   }
 
@@ -590,6 +593,10 @@
    width: 100%;
    height: 30px;
    border-radius: 20px
+ }
+
+ .com-in:focus {
+   outline: none !important
  }
 
  .hidden {

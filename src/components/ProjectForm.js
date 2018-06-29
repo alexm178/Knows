@@ -68,7 +68,7 @@ class ProjectForm extends Component {
     }, () => {
       if (this.state.display > 1) {
         this.setState({
-          optional: "optional"
+          optional: <em>optional</em>
         })
       } else {
         this.setState({

@@ -78,7 +78,7 @@ router.get('/profile/:id', (req, res) => {
   Post.find({'author': req.params.id})
   .sort('-date')
   .skip(Number(req.query.skip))
-  .limit(5)
+  .limit(25)
   .populate({
     path: 'author',
     select: 'firstName lastName img'

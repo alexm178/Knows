@@ -42,11 +42,19 @@ class ProfileCard extends Component {
     return (
       <div className="ProfileCard">
         <div className="card card-profile mb-4">
-          <div className="card-header" style={{backgroundImage: 'url("' + this.props.user.cover +'")' }}></div>
+          <div className="card-header" style={{
+            backgroundImage: 'url("' + this.props.user.cover +'")',
+            backgroundSize: "cover",
+            backgroundPosition: "center center"
+           }}></div>
             <div className="card-block text-center">
               <div style={{position: 'relative'}}>
                 <a href={"/profile/" + this.props.user._id}>
-                  <div className="card-profile-img" style={{backgroundImage: 'url(' + this.props.user.img + ')'}}>
+                  <div className="card-profile-img" style={{
+                    backgroundImage: 'url(' + this.props.user.img + ')',
+                    backgroundSize: "cover",
+                    backgroundPosition: "center center"
+                  }}>
                   </div>
                 </a>
                 {this.props.isDash &&

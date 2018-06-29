@@ -24,7 +24,7 @@ router.post('/', (req, res) => {
   })
 })
 
-router.post('/avatar', (req, res) => {
+router.post('/photo', (req, res) => {
   var s3 = new aws.S3({
     signatureVersion: 'v4',
     region: 'us-east-2',
@@ -47,7 +47,13 @@ router.post('/avatar', (req, res) => {
       res.json(err)
     } else {
       res.json({signedUrl: data})
-      User.findByIdAndUpdate(req.user._id, {img: "http://d2nyad70j27i0j.cloudfront.net/" + req.body.fileName}, {new: true}).exec()
+      if (req.query.which === "avatar") {
+        console.log("avatar")
+        User.findByIdAndUpdate(req.user._id, {$set: {img: "http://d2nyad70j27i0j.cloudfront.net/" + req.body.fileName}}).exec()
+      } else {
+        console.log("cover")
+        User.findByIdAndUpdate(req.user._id, {$set: {cover: "http://d2nyad70j27i0j.cloudfront.net/" + req.body.fileName}}).exec()
+      }
     }
   })
 })
@@ -101,7 +107,6 @@ router.get("/following", (req, res) => {
   terms = terms.map((term) => {
     return new RegExp(term, "i")
   })
-  console.log(terms)
   User.findById(req.user._id, "-_id following followers", (err, user) => {
     if (err) {
       console.log(err)

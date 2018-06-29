@@ -32,13 +32,11 @@ class PostSection extends Component {
   }
 
   render() {
-    if(this.props.loading) {
-      return(<div className="spinner"><div className="dot1"></div><div className="dot2"></div></div>)
-    } else {
       return(
-        <ul className="list-group media-list media-list-stream mb-4">{this.state.posts}</ul>
+        <ul className="list-group media-list media-list-stream mb-4">
+          {this.state.posts}
+        </ul>
       )
-    }
   }
 }
 

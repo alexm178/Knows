@@ -25,6 +25,8 @@ class ProjectTags extends Component {
   changeSelected(index) {
     this.setState({
       selected: index
+    }, () => {
+      this.pushCollabs()
     })
   }
 
@@ -69,7 +71,8 @@ class ProjectTags extends Component {
     var user = {
       firstName: selected.attributes.firstname.value,
       lastName: selected.attributes.lastName.value,
-      img: selected.attributes.img.value
+      img: selected.attributes.img.value,
+      id: selected.attributes.id
     }
     collaborators.push(user);
     this.props.harvestData("collaborators", collaborators);
@@ -90,12 +93,7 @@ class ProjectTags extends Component {
   render() {
     return (
       <div className="w-100">
-        <div className="tags-info pl-2">
-          <h3 className="d-inline float-left">Collaborators:</h3>
-          <span className="float-right pt-2 collab-info">
-            <em>Collaborators must be people you follow</em>
-          </span>
-        </div>
+          <h3 className="mb-0 pl-2">Collaborators:</h3>
         <div className="tags-display w-100 text-center p-2"
           style={{"height": (this.props.collaborators.length === 0 ? "50px" : "auto") }}
         >
@@ -129,6 +127,7 @@ class ProjectTags extends Component {
                     img={user.img}
                     firstname= {user.firstName}
                     lastname= {user.lastName}
+                    id= {user._id}
                     onClick={() => {this.changeSelected(i)}}
                     className={"list-group-item " + (this.state.selected === i ? "collab-search-user-selected" : "collab-search-user" )}
                   >
