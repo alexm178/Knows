@@ -4,10 +4,267 @@
  * copyright @colossal 2015
  */
 
- @import "~slick-carousel/slick/slick.css";
- @import "~slick-carousel/slick/slick-theme.css";
+ .edit-cover{
+   position: absolute;
+   top: 100%;
+   color: black;
+   background-color: rgba(255, 255, 255, 0.5);
+   padding-left: 5px;
+   padding-right: 5px;
+   border-top-right-radius: 7px;
+   left: 0px;
+   z-index: 1000
+ }.edit-cover:hover{
+   color: white;
+   background-color: rgba(0, 0, 0, 0.25);
+ }
+
+ @media (min-width: 0px) {
+   .edit-cover {
+     top: 109%;
+   }
+ }
+
+ @media (min-width: 568px) {
+   .edit-cover {
+     top: 107%;
+   }
+ }
+
+ @media (min-width: 768px) {
+   .edit-cover {
+     top: 105%;
+   }
+ }
 
 
+ .profile-avatar{
+   position: relative;
+   overflow: hidden;
+ }
+
+
+ .edit-avatar {
+   color: black;
+   background-color: rgba(255, 255, 255, 0.5);
+   width: 100%;
+   height: 40%;
+   position: absolute;
+   padding-top: -5px;
+   border-top-right-radius: 100%;
+   border-top-left-radius: 100%;
+   top: 82%;
+   text-align: center;
+ }.edit-avatar:hover{
+   color: white;
+   background-color: rgba(0, 0, 0, 0.25);
+ }
+
+@media (max-width: 768px) {
+  .edit-avatar {
+    top: 75%
+  }
+}
+
+ .preview-project{
+   width: 50%;
+   display: inline-block;
+   letter-spacing: 8px;
+   height: 50px;
+   padding-top: 15px;
+   font-weight: 500;
+   border-right: 1px solid rgba(0,0,0,0.125)
+ }
+
+ .post-project{
+   width: 50%;
+   display: inline-block;
+   letter-spacing: 8px;
+   height: 50px;
+   padding-top: 15px;
+   font-weight: 500;
+ }
+
+ .preview-section{
+   padding-top: 40px;
+   height: 108px;
+   text-align: center;
+ }
+
+
+ .collab-info {
+   font-size: 10px
+ }
+
+ .project-prev{
+   width: 33%;
+   display: inline-block;
+ }
+
+ .project-next{
+   width: 33%;
+   text-align: right;
+   display: inline-block;
+ }
+
+  .project-optional {
+    width: 33%;
+    text-align: center;
+    height: 20px;
+    display: inline-block;
+    color: #636c72;
+    font-weight: 500;
+  }
+
+  .collab-cancel-x{
+    position: absolute;
+    left: 3.5px;
+    top: -4px;
+  }
+
+  .collab-cancel{
+    position: absolute;
+    border: 1px solid rgba(0,0,0,0.125);
+    border-radius: 100%;
+    width: 15px;
+    height: 15px;
+    font-size: 12px;
+    z-index: 100;
+    left: 50px;
+    background-color: #c6cad1;
+    padding-bottom: 1px;
+    padding-right: 1px;
+    color: white;
+    cursor: pointer
+  }
+
+  .collab-av {
+    margin: 0 auto;
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+  }
+
+  .collab-name {
+    font-weight: 600
+  }
+
+  .collab {
+    color: #3097D1;
+    display: inline-block;
+    position: relative;
+    padding-top: 5px
+  }
+
+  .collabs-action {
+    width: 100%;
+    text-align: center;
+  }
+
+  .collabs-input{
+    width: 60%;
+    border-top: 0px;
+    border-right: 0px;
+    border-left: 0px;
+    resize: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    text-align: center;
+    height: 33px;
+    font-size: 25px;
+    line-height: 25px;
+  } .collabs-input:focus{
+    outline: none
+  }
+
+  .found-collabs{
+    width: 60%;
+    position: absolute;
+    margin-left: 20%;
+    z-index: 1;
+    max-height: 145px;
+    overflow: scroll
+  }
+
+  .collab-search-av {
+    height: 25px;
+    width: 25px !important;
+  }
+
+  .collab-search-user {
+
+    padding: 5px !important;
+    text-align: left;
+  }
+
+  .collab-search-user-selected {
+    background-color: #d0dde5;
+    padding: 5px !important;
+    text-align: left;
+  }
+
+  .tag {
+    background-color: rgba(91,192,222,0.5);
+    color: rgba(0, 0, 0, 0.5);
+    padding: 3px;
+    border-radius: 20px;
+    padding-bottom: 6px;
+    margin: 2px;
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 15px
+  }
+
+  .tag-cancel{
+    background-color: rgb(0, 0, 0, 0.5);
+    overflow: visible;
+    width: 200px;
+    height: 200px;
+    color: white;
+    padding-bottom: 3px;
+    padding-left: 7px;
+    padding-right: 7px;
+    border-radius: 100%;
+    cursor: pointer
+  }
+
+  .tags-input {
+    width: 50%;
+    border-top: 0px;
+    border-right: 0px;
+    border-left: 0px;
+    resize: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    text-align: center;
+    height: 33px;
+    font-size: 25px;
+    line-height: 25px;
+  } .tags-input:focus{
+    outline: none
+  }
+
+  .tags-display{
+    white-space: ;
+
+  }
+
+  .tags-info {
+    font-size: 12px;
+    height: 25px;
+    padding-right: 5px;
+  }
+
+  .tags-action {
+    margin-left: 25%;
+    display: inline !important;
+  }
+
+  .add-tag{
+    color: #5bc0de;
+    font-size: 35px;
+    position: absolute;
+    bottom: 8px;
+    right: 22%
+  }
 
  .project-title-input {
    font-size: 25px;
@@ -53,6 +310,7 @@
    border-top: 0px;
    border-bottom-left-radius: 0.25rem;
    border-bottom-right-radius: 0.25rem;
+   color: rgb(91, 192, 222)
  }
 
  .timeline-item {

@@ -9,7 +9,7 @@ class PostForm extends Component {
     super(props);
     this.state = {
       content: '',
-      project: false,
+      project: true,
     }
   }
 

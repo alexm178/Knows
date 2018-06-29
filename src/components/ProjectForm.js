@@ -2,15 +2,21 @@ import React, { Component } from 'react';
 import Timeline from "./Timeline";
 import ProjectTitle from "./ProjectTitle";
 import ProjectDescription from "./ProjectDescription";
+import ProjectTags from "./ProjectTags";
+import ProjectColabs from "./ProjectColabs";
+import PreviewProject from "./PreviewProject"
 
 class ProjectForm extends Component {
   constructor(props){
     super(props);
     this.state = {
-      display: 0,
+      display: 5,
       title: "",
       description: "",
-      stages: ['']
+      stages: [''],
+      tags: [],
+      collaborators: [],
+      optional: ""
     }
   }
 
@@ -25,7 +31,15 @@ class ProjectForm extends Component {
       case 2:
         return(<Timeline harvestData={this.harvestData.bind(this)} titles={this.state.stages}/>)
         break;
-
+      case 3:
+        return(<ProjectTags harvestData={this.harvestData.bind(this)} tags={this.state.tags} />);
+        break;
+      case 4:
+        return(<ProjectColabs harvestData={this.harvestData.bind(this)} collaborators={this.state.collaborators} />);
+        break;
+      case 5:
+        return(<PreviewProject project={this.state} />);
+        break;
     }
   }
 
@@ -39,13 +53,28 @@ class ProjectForm extends Component {
         break;
       case "description":
         this.setState({description: data});
-        break
+        break;
+      case "tags":
+        this.setState({tags: data});
+        break;
+      case "collaborators":
+        this.setState({collaborators: data})
     }
   }
 
   navigateForm(n) {
     this.setState({
       display: this.state.display + n
+    }, () => {
+      if (this.state.display > 1) {
+        this.setState({
+          optional: "optional"
+        })
+      } else {
+        this.setState({
+          optional: ""
+        })
+      }
     })
   }
 
@@ -54,11 +83,14 @@ class ProjectForm extends Component {
       <div className="project-form w-100">
         {this.getComponent(this.state.display)}
         <div className="project-nav w-100">
-          <div onClick={() => {this.navigateForm(-1)}} className={"d-inline float-left pl-2 pb-2 " + (this.state.display === 0 ? "hidden" : null)} style={{"color": "#5bc0de"}}>
-            <span className="icon icon-chevron-thin-left"></span>
+          <div onClick={() => {this.navigateForm(-1)}} className={"project-prev " + (this.state.display === 0 ? "hidden" : "auto")} style={{"color": "#5bc0de", "cursor" : "pointer"}}>
+            <span className="icon icon-chevron-thin-left"  ></span>
              Previous
           </div>
-          <div onClick={() => {this.navigateForm(1)}} className={"d-inline float-right pr-2 pb-2 " + (this.state.display === 6 ? "hidden" : null)} style={{"color": "#5bc0de"}}>
+          <div className="project-optional">
+            {this.state.optional}
+          </div>
+          <div onClick={() => {this.navigateForm(1)}} className={"project-next " + (this.state.display === 5 ? "hidden" : "auto")} style={{"color": "#5bc0de", "cursor" : "pointer"}}>
           Next
             <span className="icon icon-chevron-thin-right"></span>
           </div>

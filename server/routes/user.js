@@ -95,4 +95,64 @@ router.get('/follows/:which', (req, res) => {
   })
 })
 
+
+router.get("/following", (req, res) => {
+  var terms = req.query.terms.split(" ");
+  terms = terms.map((term) => {
+    return new RegExp(term, "i")
+  })
+  console.log(terms)
+  User.findById(req.user._id, "-_id following followers", (err, user) => {
+    if (err) {
+      console.log(err)
+    } else {
+      User.aggregate([
+        {
+          $match:
+            { $or: [
+              {firstName:
+                {$in: terms}
+              },
+              {lasttName:
+                {$in: terms}
+              },
+            ]}
+          },
+          {
+            $project: {
+              isFollowing: {
+                $in: [
+                  "$_id", user.followers
+                ]
+              },
+              firstName: 1,
+              lastName: 1,
+              img: 1
+            }
+          },
+          {
+            $sort: {
+              isFollowing: -1
+            }
+          },
+          {
+            $limit: 10
+          }
+        ])
+        .then(
+          users => {
+            res.json(users)
+          }
+        ).catch(
+          err => {
+            console.log(err);
+            res.json({err: err})
+          }
+        )
+    }
+  })
+})
+
+
+
 module.exports = router

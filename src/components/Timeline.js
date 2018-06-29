@@ -69,8 +69,8 @@ class Timeline extends Component {
     return (
           <div className="w-100 p-2">
             <div className="w-100">
-              <h3 className="d-inline text-muted" >Timeline</h3>
-              <h3 className="d-inline text-muted select-indicator">Step {this.state.selected + 1}</h3>
+              <h3 className="d-inline" >Timeline</h3>
+              <h3 className="d-inline select-indicator">Step {this.state.selected + 1}</h3>
             </div>
             <div className="d-block timeline">
               <div className="timeline-item" style={{"width" : 100 / (this.state.titles.length + 2) + "%"}}>
